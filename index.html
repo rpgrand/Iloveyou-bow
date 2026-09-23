@@ -1,3069 +1,983 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>FOR YOU</title>
-
-
 <style>
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#000;font-family:Arial,sans-serif;touch-action:none}
+body{position:fixed;inset:0}
 
-/* =====================================================
-   RESET
-===================================================== */
+/* The ENTIRE game lives in #stage. JS rotates it on portrait phones. */
+#stage{position:fixed;left:0;top:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:#000;transform-origin:0 0;touch-action:none;will-change:transform,width,height}
+canvas{display:block;position:absolute;left:0;top:0;width:100%;height:100%;background:#000;cursor:crosshair;touch-action:none}
 
-* {
-    box-sizing: border-box;
+#startScreen{position:absolute;inset:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;cursor:pointer}
+#startScreen h1{margin:0 0 16px;color:#fff;font-size:clamp(28px,5vw,48px);font-weight:300;letter-spacing:8px;animation:breathe 2s infinite ease-in-out}
+#startScreen p{margin:0;color:#666;font-size:11px;letter-spacing:4px}
+#startScreen p#rotateHint{display:block;margin-top:14px;color:#888}
+@keyframes breathe{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
 
-    user-select: none;
-    -webkit-user-select: none;
+#message{position:absolute;top:43%;left:50%;width:100%;transform:translate(-50%,-50%) scale(.6) rotate(-2deg);pointer-events:none;opacity:0;z-index:15;white-space:nowrap;text-align:center;will-change:transform,opacity;transition:opacity .35s ease,transform .65s cubic-bezier(.2,.9,.2,1)}
+#message.show{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-2deg)}
+.message-main{font-family:Impact,"Arial Black",Arial,sans-serif;font-size:clamp(38px,7vw,88px);font-weight:900;letter-spacing:2px;line-height:.9;text-transform:uppercase;-webkit-text-stroke:1px rgba(0,0,0,.15)}
+#message.miss .message-main{color:#bcbcbc;text-shadow:3px 3px 0 #777,6px 6px 0 rgba(0,0,0,.45)}
+#message.love .message-main{color:#ff4b18;text-shadow:3px 3px 0 #8d250b,6px 6px 0 rgba(0,0,0,.45)}
+.message-heart{margin-top:14px;font-size:22px;color:#ff4b18;animation:heartPulse 1s infinite ease-in-out}
+@keyframes heartPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 
-    -webkit-tap-highlight-color: transparent;
+#powerContainer{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);width:min(260px,45vw);height:5px;background:#222;border-radius:10px;overflow:hidden;opacity:0;z-index:10}
+#powerBar{width:0%;height:100%;background:#fff;box-shadow:0 0 12px #fff}
+#instruction{position:absolute;left:50%;bottom:47px;transform:translateX(-50%);width:100%;color:#555;font-size:10px;letter-spacing:2px;text-align:center;opacity:0;pointer-events:none;white-space:nowrap;z-index:10}
+
+#musicButton,#flipButton{position:absolute;top:18px;width:42px;height:42px;border:1px solid #333;border-radius:50%;background:rgba(0,0,0,.75);color:#aaa;cursor:pointer;z-index:30;display:none;touch-action:manipulation}
+#musicButton{right:18px;font-size:17px}
+#flipButton{right:70px;font-size:20px}
+#musicButton:hover,#flipButton:hover{color:#fff;border-color:#fff}
+
+#comboHud{position:absolute;top:22px;left:24px;z-index:12;pointer-events:none;color:#fff;font-family:Impact,"Arial Black",Arial,sans-serif;letter-spacing:2px;text-align:left;text-shadow:2px 2px 0 rgba(0,0,0,.7);opacity:0;will-change:opacity;transition:opacity .25s ease}
+#comboHud.active{opacity:1}
+#comboCount{font-size:28px;line-height:1}
+#highestHit{margin-top:5px;color:#aaa;font-family:Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:2px}
+#comboCount.hot{animation:comboPulse .35s ease-out}
+@keyframes comboPulse{0%{transform:scale(1)}45%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+/* Stage is already the landscape size, so these apply to the small logical width */
+@media screen and (max-width:768px){
+  #startScreen h1{font-size:clamp(26px,8vw,36px);letter-spacing:5px}
+  #startScreen p{font-size:9px;letter-spacing:3px}
+  .message-main{font-size:clamp(34px,10vw,64px);letter-spacing:1px}
+  .message-heart{font-size:18px;margin-top:10px}
+  #powerContainer{width:180px;height:4px;bottom:22px}
+  #instruction{bottom:40px;font-size:7px;letter-spacing:1px;padding:0 8px}
+  #musicButton{width:40px;height:40px;top:12px;right:12px}
+  #flipButton{width:40px;height:40px;top:12px;right:60px}
+  #comboHud{top:14px;left:14px}
+  #comboCount{font-size:22px}
+  #highestHit{font-size:8px;margin-top:3px}
 }
-
-
-html,
-body {
-
-    margin: 0;
-
-    width: 100%;
-    height: 100%;
-
-    overflow: hidden;
-
-    background: #000;
-
-    font-family: Arial, sans-serif;
-
+@media screen and (max-width:400px){
+  #startScreen h1{font-size:25px;letter-spacing:4px}
+  .message-main{font-size:40px}
+  #powerContainer{width:150px}
 }
-
-
-/* =====================================================
-   CANVAS
-===================================================== */
-
-canvas {
-
-    display: block;
-
-    position: fixed;
-
-    left: 0;
-    top: 0;
-
-    width: 100vw;
-    height: 100vh;
-
-    background: #000;
-
-    cursor: crosshair;
-
-    touch-action: none;
-
-}
-
-
-/* =====================================================
-   START SCREEN
-===================================================== */
-
-#startScreen {
-
-    position: fixed;
-
-    inset: 0;
-
-    width: 100vw;
-    height: 100vh;
-
-    background: #000;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    z-index: 20;
-
-    cursor: pointer;
-
-}
-
-
-#startScreen h1 {
-
-    margin: 0 0 16px;
-
-    color: #fff;
-
-    font-size: clamp(
-        28px,
-        5vw,
-        48px
-    );
-
-    font-weight: 300;
-
-    letter-spacing: 8px;
-
-    animation:
-        breathe 2s infinite ease-in-out;
-
-}
-
-
-#startScreen p {
-
-    margin: 0;
-
-    color: #666;
-
-    font-size: 11px;
-
-    letter-spacing: 4px;
-
-}
-
-
-@keyframes breathe {
-
-    0%,
-    100% {
-
-        opacity: .4;
-
-        transform:
-            scale(1);
-
-    }
-
-    50% {
-
-        opacity: 1;
-
-        transform:
-            scale(1.04);
-
-    }
-
-}
-
-
-/* =====================================================
-   MESSAGE
-===================================================== */
-
-#message {
-
-    position: fixed;
-
-    top: 43%;
-    left: 50%;
-
-    width: 100%;
-
-    transform:
-        translate(-50%, -50%)
-        scale(.6)
-        rotate(-2deg);
-
-    pointer-events: none;
-
-    opacity: 0;
-
-    z-index: 15;
-
-    white-space: nowrap;
-
-    text-align: center;
-
-    transition:
-        opacity .35s ease,
-        transform .65s cubic-bezier(.2,.9,.2,1);
-
-}
-
-
-#message.show {
-
-    opacity: 1;
-
-    transform:
-        translate(-50%, -50%)
-        scale(1)
-        rotate(-2deg);
-
-}
-
-
-.message-main {
-
-    font-family:
-        Impact,
-        "Arial Black",
-        Arial,
-        sans-serif;
-
-    font-size:
-        clamp(
-            38px,
-            7vw,
-            88px
-        );
-
-    font-weight: 900;
-
-    letter-spacing: 2px;
-
-    line-height: .9;
-
-    text-transform: uppercase;
-
-    -webkit-text-stroke:
-        1px rgba(0,0,0,.15);
-
-}
-
-
-/* =====================================================
-   MISS
-===================================================== */
-
-#message.miss .message-main {
-
-    color: #bcbcbc;
-
-    text-shadow:
-
-        3px 3px 0 #777,
-
-        6px 6px 0
-        rgba(0,0,0,.45);
-
-}
-
-
-/* =====================================================
-   LOVE
-===================================================== */
-
-#message.love .message-main {
-
-    color: #ff4b18;
-
-    text-shadow:
-
-        3px 3px 0 #8d250b,
-
-        6px 6px 0
-        rgba(0,0,0,.45);
-
-}
-
-
-/* =====================================================
-   HEART
-===================================================== */
-
-.message-heart {
-
-    margin-top: 14px;
-
-    font-size: 22px;
-
-    color: #ff4b18;
-
-    animation:
-        heartPulse 1s infinite ease-in-out;
-
-}
-
-
-@keyframes heartPulse {
-
-    0%,
-    100% {
-
-        transform:
-            scale(1);
-
-    }
-
-    50% {
-
-        transform:
-            scale(1.25);
-
-    }
-
-}
-
-
-/* =====================================================
-   POWER BAR
-===================================================== */
-
-#powerContainer {
-
-    position: fixed;
-
-    left: 50%;
-
-    bottom: 28px;
-
-    transform:
-        translateX(-50%);
-
-    width: min(
-        260px,
-        45vw
-    );
-
-    height: 5px;
-
-    background: #222;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-
-    opacity: 0;
-
-    z-index: 10;
-
-}
-
-
-#powerBar {
-
-    width: 0%;
-
-    height: 100%;
-
-    background: #fff;
-
-    box-shadow:
-        0 0 12px #fff;
-
-}
-
-
-/* =====================================================
-   INSTRUCTION
-===================================================== */
-
-#instruction {
-
-    position: fixed;
-
-    left: 50%;
-
-    bottom: 47px;
-
-    transform:
-        translateX(-50%);
-
-    width: 100%;
-
-    color: #555;
-
-    font-size: 10px;
-
-    letter-spacing: 2px;
-
-    text-align: center;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    white-space: nowrap;
-
-    z-index: 10;
-
-}
-
-
-/* =====================================================
-   MUSIC BUTTON
-===================================================== */
-
-#musicButton {
-
-    position: fixed;
-
-    top: 18px;
-
-    right: 18px;
-
-    width: 42px;
-    height: 42px;
-
-    border:
-        1px solid #333;
-
-    border-radius: 50%;
-
-    background:
-        rgba(0,0,0,.75);
-
-    color: #aaa;
-
-    font-size: 17px;
-
-    cursor: pointer;
-
-    z-index: 30;
-
-    display: none;
-
-}
-
-
-#musicButton:hover {
-
-    color: #fff;
-
-    border-color: #fff;
-
-}
-
-
-/* =====================================================
-   MOBILE LANDSCAPE GAME MODE
-   Portrait phone -> automatic sideways game view
-===================================================== */
-
-@media screen and (max-width: 768px) and (orientation: portrait) {
-
-    html,
-    body {
-
-        width: 100%;
-        height: 100%;
-
-        margin: 0;
-        padding: 0;
-
-        overflow: hidden;
-
-        background: #000;
-
-        touch-action: none;
-    }
-
-
-    /*
-       Rotate the whole game sideways.
-
-       Portrait phone:
-       1080 x 1920
-
-       Becomes:
-       1920 x 1080
-    */
-
-    body {
-
-        position: fixed;
-
-        width: 100vh;
-        height: 100vw;
-
-        top: 50%;
-        left: 50%;
-
-        transform:
-            translate(-50%, -50%)
-            rotate(90deg);
-
-        transform-origin: center center;
-
-        overflow: hidden;
-    }
-
-
-    /*
-       GAME CANVAS
-
-       Keep the content landscape.
-    */
-
-    canvas {
-
-        position: fixed;
-
-        left: 0;
-        top: 0;
-
-        width: 100vh !important;
-        height: 100vw !important;
-
-        min-width: 0 !important;
-        min-height: 0 !important;
-
-        max-width: none !important;
-        max-height: none !important;
-
-        display: block;
-
-        touch-action: none;
-    }
-
-
-    /*
-       START SCREEN
-
-       Same landscape size as canvas.
-    */
-
-    #startScreen {
-
-        position: fixed;
-
-        left: 0;
-        top: 0;
-
-        width: 100vh !important;
-        height: 100vw !important;
-
-        min-width: 0 !important;
-        min-height: 0 !important;
-
-        max-width: none !important;
-        max-height: none !important;
-
-        transform: none;
-
-        display: flex;
-
-        align-items: center;
-        justify-content: center;
-    }
-
-
-    /*
-       MESSAGE
-    */
-
-    #message {
-
-        position: fixed;
-
-        left: 50%;
-        top: 43%;
-
-        width: 100%;
-
-        transform:
-            translate(-50%, -50%)
-            scale(.6)
-            rotate(-2deg);
-    }
-
-
-    #message.show {
-
-        transform:
-            translate(-50%, -50%)
-            scale(1)
-            rotate(-2deg);
-    }
-
-
-    /*
-       POWER BAR
-    */
-
-    #powerContainer {
-
-        position: fixed;
-
-        left: 50%;
-
-        bottom: 25px;
-
-        width: 200px;
-
-        transform:
-            translateX(-50%);
-    }
-
-
-    /*
-       INSTRUCTION
-    */
-
-    #instruction {
-
-        position: fixed;
-
-        left: 50%;
-
-        bottom: 45px;
-
-        width: 100%;
-
-        transform:
-            translateX(-50%);
-    }
-
-
-    /*
-       MUSIC BUTTON
-    */
-
-    #musicButton {
-
-        position: fixed;
-
-        top: 15px;
-        right: 15px;
-
-        width: 40px;
-        height: 40px;
-    }
-
-}
-
-
-/* =====================================================
-   NORMAL MOBILE LANDSCAPE
-===================================================== */
-
-@media screen and (max-width: 768px) and (orientation: landscape) {
-
-    html,
-    body {
-
-        width: 100%;
-        height: 100%;
-
-        overflow: hidden;
-
-        touch-action: none;
-    }
-
-
-    canvas {
-
-        width: 100vw !important;
-        height: 100vh !important;
-
-        left: 0;
-        top: 0;
-    }
-
-
-    #startScreen {
-
-        width: 100vw !important;
-        height: 100vh !important;
-
-        left: 0;
-        top: 0;
-    }
-
-
-    #message {
-
-        width: 100%;
-
-        left: 50%;
-        top: 44%;
-    }
-
-
-    #powerContainer {
-
-        bottom: 18px;
-    }
-
-
-    #instruction {
-
-        bottom: 36px;
-    }
-
-
-    #musicButton {
-
-        top: 12px;
-        right: 12px;
-    }
-
-}
-
 </style>
-
 </head>
-
-
 <body>
 
+<div id="stage">
+  <audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
 
-<!-- =====================================================
-     MUSIC
-===================================================== -->
-
-<audio
-    id="bgMusic"
-    src="music.mp3"
-    loop
-    preload="auto">
-</audio>
-
-
-<!-- =====================================================
-     START
-===================================================== -->
-
-<div id="startScreen">
-
+  <div id="startScreen">
     <h1>FOR YOU</h1>
-
     <p>CLICK TO BEGIN</p>
+    <br>
+    <p>Made by Neil</p>
+    <p id="rotateHint">↻ LANDSCAPE MODE</p>
+  </div>
 
+  <div id="comboHud">
+    <div id="comboCount">COMBO 0</div>
+    <div id="highestHit">HIGHEST HIT 0</div>
+  </div>
+
+  <canvas id="game"></canvas>
+
+  <div id="message">
+    <div class="message-main">MISS YOU!</div>
+    <div class="message-heart">♥</div>
+  </div>
+
+  <div id="powerContainer"><div id="powerBar"></div></div>
+  <div id="instruction">DRAG LEFT TO CHARGE • MOVE UP/DOWN TO AIM • RELEASE</div>
+
+  <button id="musicButton" type="button">♪</button>
+  <button id="flipButton" type="button" aria-label="Flip screen">⟲</button>
 </div>
-
-
-<!-- =====================================================
-     GAME
-===================================================== -->
-
-<canvas id="game"></canvas>
-
-
-<!-- =====================================================
-     MESSAGE
-===================================================== -->
-
-<div id="message">
-
-    <div class="message-main">
-        MISS YOU!
-    </div>
-
-    <div class="message-heart">
-        ♥
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     POWER
-===================================================== -->
-
-<div id="powerContainer">
-
-    <div id="powerBar"></div>
-
-</div>
-
-
-<!-- =====================================================
-     INSTRUCTION
-===================================================== -->
-
-<div id="instruction">
-
-    DRAG LEFT TO CHARGE • MOVE UP/DOWN TO AIM • RELEASE
-
-</div>
-
-
-<!-- =====================================================
-     MUSIC BUTTON
-===================================================== -->
-
-<button
-    id="musicButton"
-    type="button">
-
-    ♪
-
-</button>
-
 
 <script>
-
-/* =====================================================
-   ELEMENTS
-===================================================== */
-
-const canvas =
-    document.getElementById("game");
-
-const ctx =
-    canvas.getContext("2d");
-
-const startScreen =
-    document.getElementById("startScreen");
-
-const message =
-    document.getElementById("message");
-
-const messageMain =
-    message.querySelector(
-        ".message-main"
-    );
-
-const powerContainer =
-    document.getElementById(
-        "powerContainer"
-    );
-
-const powerBar =
-    document.getElementById(
-        "powerBar"
-    );
-
-const instruction =
-    document.getElementById(
-        "instruction"
-    );
-
-const bgMusic =
-    document.getElementById(
-        "bgMusic"
-    );
-
-const musicButton =
-    document.getElementById(
-        "musicButton"
-    );
-
-
-/* =====================================================
-   SCREEN / GAME SIZE
-===================================================== */
-
-let W = 0;
-let H = 0;
-
-let gameScale = 1;
-
-let mobilePortrait = false;
-
-
-function getScreenMode() {
-
-    mobilePortrait =
-        window.innerWidth <= 768 &&
-        window.innerHeight >
-        window.innerWidth;
-
-}
-
-
-/* =====================================================
-   RESPONSIVE SCALE
-===================================================== */
-
-function updateGameScale() {
-
-    /*
-       Base game resolution:
-       1280 x 720
-    */
-
-    const scaleX =
-        W / 1280;
-
-    const scaleY =
-        H / 720;
-
-
-    gameScale =
-        Math.min(
-            scaleX,
-            scaleY
-        );
-
-
-    /*
-       Desktop:
-       don't become too small
-    */
-
-    if (W > 768) {
-
-        gameScale =
-            Math.max(
-                .75,
-                Math.min(
-                    1.15,
-                    gameScale
-                )
-            );
-
-    }
-
-
-    /*
-       Mobile:
-       smaller objects
-    */
-
-    else {
-
-        gameScale =
-            Math.max(
-                .48,
-                Math.min(
-                    .85,
-                    gameScale
-                )
-            );
-
-    }
-
-}
-
-
-/* =====================================================
-   RESIZE
-===================================================== */
-
-function resize() {
-
-    getScreenMode();
-
-
-    /*
-       If phone is portrait,
-       treat game canvas as landscape.
-    */
-
-    if (mobilePortrait) {
-
-        W =
-            window.innerHeight;
-
-        H =
-            window.innerWidth;
-
-    }
-
-    else {
-
-        W =
-            window.innerWidth;
-
-        H =
-            window.innerHeight;
-
-    }
-
-
-    /*
-       DPR capped at 2
-       for performance
-    */
-
-    const dpr =
-        Math.min(
-            window.devicePixelRatio || 1,
-            2
-        );
-
-
-    canvas.width =
-        Math.round(
-            W * dpr
-        );
-
-    canvas.height =
-        Math.round(
-            H * dpr
-        );
-
-
-    canvas.style.width =
-        mobilePortrait
-            ? `${window.innerHeight}px`
-            : `${window.innerWidth}px`;
-
-
-    canvas.style.height =
-        mobilePortrait
-            ? `${window.innerWidth}px`
-            : `${window.innerHeight}px`;
-
-
-    /*
-       Draw using CSS-pixel coordinates
-    */
-
-    ctx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-
-
-    updateGameScale();
-
-    setBowPosition();
-
-    moveTarget(false);
-
-}
-
-
-window.addEventListener(
-    "resize",
-    resize
+/* ================= ELEMENTS ================= */
+const $=id=>document.getElementById(id);
+const canvas=$("game");
+const ctx=canvas.getContext("2d",{alpha:false,desynchronized:true});
+const startScreen=$("startScreen"),message=$("message"),
+      messageMain=message.querySelector(".message-main"),
+      powerContainer=$("powerContainer"),powerBar=$("powerBar"),
+      instruction=$("instruction"),bgMusic=$("bgMusic"),
+      musicButton=$("musicButton"),flipButton=$("flipButton"),
+      comboHud=$("comboHud"),comboCount=$("comboCount"),
+      highestHit=$("highestHit"),stage=$("stage");
+
+/* ================= SCREEN / ORIENTATION ================= */
+let W=0,H=0,gameScale=1,mobilePortrait=false,dprCap=2,rotCCW=false,manualFlip=false;
+
+const isMobileDevice=(
+  (navigator.maxTouchPoints||0)>0 ||
+  window.matchMedia("(pointer:coarse)").matches ||
+  "ontouchstart" in window ||
+  /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
 );
 
+/* rotate when screen is portrait AND (mobile OR phone-sized width) */
+function shouldRotate(vw,vh){
+  return vh>vw && (isMobileDevice || vw<=820);
+}
 
-window.addEventListener(
-    "orientationchange",
-    () => {
+function getViewportSize(){
+  let vw=window.innerWidth||document.documentElement.clientWidth;
+  let vh=window.innerHeight||document.documentElement.clientHeight;
+  if(window.visualViewport){
+    const vv=window.visualViewport;
+    if(vv.width>0)vw=vv.width;
+    if(vv.height>0)vh=vv.height;
+  }
+  return{width:Math.max(1,Math.round(vw)),height:Math.max(1,Math.round(vh))};
+}
 
-        setTimeout(
-            resize,
-            100
-        );
+/* Rotates the ENTIRE game: physical 390x844 -> game 844x390 */
+function applyLandscapeView(){
+  const{width:vw,height:vh}=getViewportSize();
 
+  if(shouldRotate(vw,vh)){
+    mobilePortrait=true;
+    stage.style.width=vh+"px";
+    stage.style.height=vw+"px";
+    stage.style.transformOrigin="0 0";
+    stage.style.transform=rotCCW
+      ?`translateX(${vw}px) rotate(90deg)`
+      :`translateY(${vh}px) rotate(-90deg)`;
+  }else{
+    mobilePortrait=false;
+    stage.style.width=vw+"px";
+    stage.style.height=vh+"px";
+    stage.style.transformOrigin="0 0";
+    stage.style.transform="none";
+  }
+
+  flipButton.style.display=(started&&isMobileDevice&&mobilePortrait)?"block":"none";
+}
+
+function updateGameScale(){
+  gameScale=Math.min(W/1280,H/720);
+  gameScale=W>768
+    ?Math.max(.75,Math.min(1.15,gameScale))
+    :Math.max(.48,Math.min(.85,gameScale));
+}
+
+function resize(){
+  applyLandscapeView();
+  const vp=getViewportSize();
+  W=Math.max(1,Math.round(mobilePortrait?vp.height:vp.width));
+  H=Math.max(1,Math.round(mobilePortrait?vp.width:vp.height));
+
+  const dpr=Math.min(window.devicePixelRatio||1,dprCap);
+  canvas.width=Math.round(W*dpr);
+  canvas.height=Math.round(H*dpr);
+  canvas.style.width=W+"px";
+  canvas.style.height=H+"px";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  updateGameScale();
+  setBowPosition();
+  moveTarget(false);
+}
+
+function refresh(){applyLandscapeView();resize();}
+
+function multiRefresh(delays){
+  refresh();
+  requestAnimationFrame(refresh);
+  delays.forEach(d=>setTimeout(refresh,d));
+}
+
+function bootLandscape(){multiRefresh([100,350,800,1500]);}
+
+window.addEventListener("resize",resize);
+window.addEventListener("orientationchange",()=>{[50,250,600,1000].forEach(d=>setTimeout(resize,d));});
+if(screen.orientation){
+  screen.orientation.addEventListener("change",()=>{[50,300,700].forEach(d=>setTimeout(resize,d));});
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener("resize",resize);
+}
+
+/* ================= BOW ================= */
+const bow={x:0,y:0,angle:0,pull:0};
+const getBowHeight=()=>145*gameScale;
+const getBowCurve=()=>48*gameScale;
+const getPullDistance=()=>bow.pull*75*gameScale;
+function setBowPosition(){bow.x=W*.15;bow.y=H*.53;}
+
+/* ================= TARGET ================= */
+const target={x:0,y:0,baseX:0,baseY:0};
+const getTargetRadius=()=>45*gameScale;
+
+function moveTarget(randomize=true){
+  const minX=W*.70,maxX=W*.92,minY=H*.20,maxY=H*.78;
+  if(randomize||target.x===0){
+    target.x=minX+Math.random()*(maxX-minX);
+    target.y=minY+Math.random()*(maxY-minY);
+    target.baseX=target.x;
+    target.baseY=target.y;
+  }
+}
+
+/* ================= STATE ================= */
+let started=false,dragging=false,shooting=false,power=0;
+let arrows=[],particles=[],hearts=[];
+let messageTimer=null,activePointerId=null;
+let combo=0,highestCombo=0;
+let comboTargetTime=0,targetMoveActive=false;
+let startPointerX=0,startPointerY=0;
+
+/* target starts moving at this combo */
+const MOVE_COMBO=12;
+
+/* ================= BOW COLORS ================= */
+const bowColors=["#e5e5e5","#ffd400","#ff3b30","#ff7a18","#ffe600","#28d17c","#00e5ff","#248cff","#5b5cff","#b84cff","#ff3cff","#ff4fa3","#ffffff","#8aff00","#00ffb3","#7c4dff","#ff1744","#00b8ff","#ff9100","#ff00d4"];
+const getBowColor=()=>bowColors[Math.min(Math.floor(combo/3),bowColors.length-1)];
+
+function getBowTier(){
+  if(combo>=21)return 7;
+  if(combo>=18)return 6;
+  if(combo>=15)return 5;
+  if(combo>=12)return 4;
+  if(combo>=9)return 3;
+  if(combo>=6)return 2;
+  if(combo>=3)return 1;
+  return 0;
+}
+
+/* ================= HIT MESSAGES ================= */
+/* Random every hit. Higher combo = bigger words. "I LOVE YOU" is in every pool. */
+const praiseLow=["NICE SHOT","NICE HIT","GOOD AIM","LOVE YOU","I LOVE YOU","GOOD JOB"];
+const praiseMid=["WOW","GREAT SHOT","GOOD AIM","PERFECT","NICE HIT","I LOVE YOU","LOVE YOU"];
+const praiseHigh=["AWESOME","UNBELIEVABLE","AMAZING","INCREDIBLE","WOW","I LOVE YOU","I LOVE YOU SO MUCH"];
+let lastPraise="";
+
+function pickPraise(){
+  const pool=combo>=9?praiseHigh:combo>=3?praiseMid:praiseLow;
+  let text;
+  do{
+    text=pool[Math.floor(Math.random()*pool.length)];
+  }while(text===lastPraise&&pool.length>1);
+  lastPraise=text;
+  return text;
+}
+
+/* ================= COMBO HUD ================= */
+function updateComboHud(pulse=false){
+  comboCount.textContent=`COMBO ${combo}`;
+  highestHit.textContent=`HIGHEST HIT ${highestCombo}`;
+  comboHud.classList.add("active");
+  if(pulse){
+    comboCount.classList.remove("hot");
+    void comboCount.offsetWidth;
+    comboCount.classList.add("hot");
+  }
+}
+
+/* ================= AUDIO ================= */
+let audioCtx=null;
+function initAudio(){
+  if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==="suspended")audioCtx.resume();
+}
+
+function beep(type,f0,f1,dur,vol){
+  if(!audioCtx)return;
+  const t=audioCtx.currentTime;
+  const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+  osc.type=type;
+  osc.frequency.setValueAtTime(f0,t);
+  osc.frequency.exponentialRampToValueAtTime(f1,t+dur);
+  gain.gain.setValueAtTime(vol,t);
+  gain.gain.exponentialRampToValueAtTime(.001,t+dur);
+  osc.connect(gain);gain.connect(audioCtx.destination);
+  osc.start();osc.stop(t+dur);
+}
+const playShootSound=()=>beep("triangle",180,65,.2,.08);
+const playHitSound=()=>beep("sine",500,950,.5,.12);
+
+/* ================= FULLSCREEN / LANDSCAPE LOCK ================= */
+async function enterFullscreen(){
+  const de=document.documentElement;
+  try{
+    if(!document.fullscreenElement&&de.requestFullscreen){
+      await de.requestFullscreen({navigationUI:"hide"}).catch(()=>{});
     }
-);
-
-
-/* =====================================================
-   BOW
-===================================================== */
-
-const bow = {
-
-    x: 0,
-
-    y: 0,
-
-    angle: 0,
-
-    pull: 0
-
-};
-
-
-function getBowHeight() {
-
-    return 145 * gameScale;
-
-}
-
-
-function getBowCurve() {
-
-    return 48 * gameScale;
-
-}
-
-
-function getPullDistance() {
-
-    return (
-        bow.pull *
-        75 *
-        gameScale
-    );
-
-}
-
-
-function setBowPosition() {
-
-    /*
-       Always left side
-    */
-
-    bow.x =
-        W * .15;
-
-    bow.y =
-        H * .53;
-
-}
-
-
-/* =====================================================
-   TARGET
-===================================================== */
-
-const target = {
-
-    x: 0,
-
-    y: 0
-
-};
-
-
-function getTargetRadius() {
-
-    return (
-        45 *
-        gameScale
-    );
-
-}
-
-
-function moveTarget(randomize = true) {
-
-    /*
-       Keep target far right.
-    */
-
-    const minX =
-        W * .70;
-
-    const maxX =
-        W * .92;
-
-
-    const minY =
-        H * .20;
-
-    const maxY =
-        H * .78;
-
-
-    if (
-        randomize ||
-        target.x === 0
-    ) {
-
-        target.x =
-            minX +
-            Math.random() *
-            (maxX - minX);
-
-
-        target.y =
-            minY +
-            Math.random() *
-            (maxY - minY);
-
+  }catch(_){}
+  try{
+    if(!document.fullscreenElement&&de.webkitRequestFullscreen){
+      await Promise.resolve(de.webkitRequestFullscreen()).catch(()=>{});
     }
-
+  }catch(_){}
 }
 
-
-/* =====================================================
-   GAME STATE
-===================================================== */
-
-let started = false;
-
-let dragging = false;
-
-let shooting = false;
-
-let power = 0;
-
-let arrows = [];
-
-let particles = [];
-
-let hearts = [];
-
-let messageTimer = null;
-
-let activePointerId = null;
-
-let startPointerX = 0;
-
-let startPointerY = 0;
-
-
-/* =====================================================
-   AUDIO
-===================================================== */
-
-let audioCtx = null;
-
-
-function initAudio() {
-
-    if (!audioCtx) {
-
-        audioCtx =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
-
+async function requestLandscape(){
+  await enterFullscreen();
+  try{
+    if(screen.orientation&&typeof screen.orientation.lock==="function"){
+      await screen.orientation.lock("landscape").catch(()=>{});
     }
-
-
-    if (
-        audioCtx.state ===
-        "suspended"
-    ) {
-
-        audioCtx.resume();
-
-    }
-
+  }catch(_){}
+  multiRefresh([100,400,900,1500]);
 }
 
+/* ================= START ================= */
+startScreen.addEventListener("click",async()=>{
+  initAudio();
+  started=true;
+  startScreen.style.display="none";
+  powerContainer.style.opacity="1";
+  instruction.style.opacity="1";
+  musicButton.style.display="block";
+  comboHud.classList.add("active");
+  updateComboHud();
 
-/* =====================================================
-   START
-===================================================== */
+  await requestLandscape();
+  refresh();
 
-startScreen.addEventListener(
-    "click",
-    async () => {
+  try{
+    bgMusic.volume=.35;
+    await bgMusic.play();
+  }catch(error){
+    console.log("Music error:",error);
+  }
+});
 
-        initAudio();
+/* ================= MUSIC ================= */
+musicButton.addEventListener("click",e=>{
+  e.stopPropagation();
+  if(bgMusic.paused){bgMusic.play();musicButton.textContent="♪";}
+  else{bgMusic.pause();musicButton.textContent="×";}
+});
 
+/* ================= FLIP ================= */
+flipButton.addEventListener("click",e=>{
+  e.stopPropagation();
+  manualFlip=true;
+  rotCCW=!rotCCW;
+  refresh();
+});
 
-        started = true;
+/* ================= POINTER (physical -> rotated game coords) ================= */
+function getGamePointer(e){
+  const vp=getViewportSize();
+  const x=e.clientX,y=e.clientY;
+  if(mobilePortrait){
+    if(!rotCCW)return{x:vp.height-y,y:x};
+    return{x:y,y:vp.width-x};
+  }
+  return{x,y};
+}
 
+canvas.addEventListener("pointerdown",e=>{
+  if(!started||shooting)return;
+  if(e.pointerType==="mouse"&&e.button!==0)return;
+  initAudio();
+  dragging=true;
+  activePointerId=e.pointerId;
+  const p=getGamePointer(e);
+  startPointerX=p.x;
+  startPointerY=p.y;
+  power=0;bow.pull=0;
+  powerBar.style.width="0%";
+  try{canvas.setPointerCapture(e.pointerId);}catch(_){}
+});
 
-        startScreen.style.display =
-            "none";
+canvas.addEventListener("pointermove",e=>{
+  if(!dragging||e.pointerId!==activePointerId)return;
+  const p=getGamePointer(e);
+  const dx=p.x-startPointerX,dy=p.y-startPointerY;
+  bow.angle=clamp(Math.atan2(dy,Math.abs(dx)+160*gameScale),-.65,.65);
+  power=clamp(Math.max(0,-dx)/(240*gameScale),0,1);
+  bow.pull=power;
+  powerBar.style.width=(power*100)+"%";
+},{passive:true});
 
+function endPointer(e){
+  if(!dragging||e.pointerId!==activePointerId)return;
+  dragging=false;
+  try{canvas.releasePointerCapture(e.pointerId);}catch(_){}
+  activePointerId=null;
+  if(power>=.05){
+    shoot();
+  }else{
+    power=0;bow.pull=0;
+    powerBar.style.width="0%";
+  }
+}
+canvas.addEventListener("pointerup",endPointer);
+canvas.addEventListener("pointercancel",endPointer);
 
-        powerContainer.style.opacity =
-            "1";
+/* ================= SHOOT ================= */
+const arrowSpeed=p=>(430+p*1050)*Math.max(.75,gameScale);
 
+function shoot(){
+  if(shooting)return;
+  shooting=true;
+  const angle=bow.angle,speed=arrowSpeed(power);
+  arrows.push({
+    x:bow.x,y:bow.y,
+    vx:Math.cos(angle)*speed,
+    vy:Math.sin(angle)*speed,
+    rotation:angle,
+    length:82*gameScale,
+    gravity:180*gameScale,
+    alive:true
+  });
+  power=0;bow.pull=0;
+  powerBar.style.width="0%";
+  playShootSound();
+}
 
-        instruction.style.opacity =
-            "1";
+/* ================= UPDATE ================= */
+let lastTime=performance.now(),now=lastTime,perfFrames=0,perfTime=0;
 
+function segmentHitsCircle(x1,y1,x2,y2,cx,cy,r){
+  const dx=x2-x1,dy=y2-y1,len2=dx*dx+dy*dy;
+  let t=len2>0?((cx-x1)*dx+(cy-y1)*dy)/len2:0;
+  t=t<0?0:t>1?1:t;
+  return Math.hypot(x1+dx*t-cx,y1+dy*t-cy)<r;
+}
 
-        musicButton.style.display =
-            "block";
+function update(time){
+  requestAnimationFrame(update);
+  const rawDt=(time-lastTime)/1000;
+  lastTime=time;now=time;
+  const dt=Math.max(0,Math.min(rawDt,.033));
 
-
-        /*
-           Try real landscape lock
-           when browser allows it.
-        */
-
-        try {
-
-            if (
-                screen.orientation &&
-                screen.orientation.lock
-            ) {
-
-                await screen.orientation.lock(
-                    "landscape"
-                );
-
-            }
-
-        }
-        catch (error) {
-
-            /*
-               CSS fallback is already active.
-            */
-
-            console.log(
-                "Landscape lock unavailable"
-            );
-
-        }
-
-
-        /*
-           Start music
-        */
-
-        try {
-
-            bgMusic.volume =
-                .35;
-
-            await bgMusic.play();
-
-        }
-        catch (error) {
-
-            console.log(
-                "Music error:",
-                error
-            );
-
-        }
-
-
+  if(started&&rawDt<.25){
+    perfTime+=rawDt;perfFrames++;
+    if(perfFrames>=90){
+      if(perfTime/perfFrames>.0205&&dprCap>1){
+        dprCap=Math.max(1,dprCap-.25);
         resize();
-
+      }
+      perfFrames=0;perfTime=0;
     }
-);
+  }
 
+  if(combo<MOVE_COMBO){
+    comboTargetTime=0;
+    target.x=target.baseX;
+    target.y=target.baseY;
+  }
 
-/* =====================================================
-   MUSIC
-===================================================== */
+  if(targetMoveActive&&combo>=MOVE_COMBO){
+    comboTargetTime+=dt;
+    const m=(10+Math.min(combo-MOVE_COMBO,30)*.8)*gameScale;
+    target.x=clamp(target.baseX+Math.sin(comboTargetTime*2.7)*m*3,W*.66,W*.94);
+    target.y=clamp(target.baseY+Math.sin(comboTargetTime*3.9)*m*2,H*.16,H*.82);
+  }
 
-musicButton.addEventListener(
-    "click",
-    (e) => {
+  const tr=getTargetRadius();
 
-        e.stopPropagation();
+  for(let i=arrows.length-1;i>=0;i--){
+    const a=arrows[i];
+    const oldTipX=a.x+Math.cos(a.rotation)*a.length;
+    const oldTipY=a.y+Math.sin(a.rotation)*a.length;
 
+    a.x+=a.vx*dt;
+    a.y+=a.vy*dt+.5*a.gravity*dt*dt;
+    a.vy+=a.gravity*dt;
+    a.rotation=Math.atan2(a.vy,a.vx);
 
-        if (
-            bgMusic.paused
-        ) {
+    const tipX=a.x+Math.cos(a.rotation)*a.length;
+    const tipY=a.y+Math.sin(a.rotation)*a.length;
 
-            bgMusic.play();
-
-            musicButton.textContent =
-                "♪";
-
-        }
-
-        else {
-
-            bgMusic.pause();
-
-            musicButton.textContent =
-                "×";
-
-        }
-
-    }
-);
-
-
-/* =====================================================
-   POINTER COORDINATES
-===================================================== */
-
-/*
-   Pointer client coordinates are viewport
-   coordinates. For the CSS-rotated mobile
-   fallback, convert them to the game's
-   landscape coordinate system.
-*/
-
-function getGamePointer(
-    e
-) {
-
-    const x =
-        e.clientX;
-
-    const y =
-        e.clientY;
-
-
-    if (
-        mobilePortrait
-    ) {
-
-        return {
-
-            x:
-                window.innerHeight -
-                y,
-
-            y:
-                x
-
-        };
-
+    if(segmentHitsCircle(oldTipX,oldTipY,tipX,tipY,target.x,target.y,tr)){
+      a.alive=false;
+      hitTarget();
+      continue;
     }
 
+    if(a.x>W+200||a.x<-200||a.y>H+200||a.y<-200){
+      a.alive=false;
+      combo=0;
+      targetMoveActive=false;
+      updateComboHud();
+      showMessage("MISS YOU!","miss",1500);
+    }
+  }
 
-    return {
+  arrows=arrows.filter(a=>a.alive);
+  if(shooting&&arrows.length===0)shooting=false;
 
-        x,
-        y
-
-    };
-
+  updateParticles(dt);
+  updateHearts(dt);
+  draw();
 }
 
-
-/* =====================================================
-   POINTER DOWN
-===================================================== */
-
-canvas.addEventListener(
-    "pointerdown",
-    (e) => {
-
-        if (!started)
-            return;
-
-        if (shooting)
-            return;
-
-
-        if (
-            e.pointerType ===
-            "mouse" &&
-            e.button !== 0
-        )
-            return;
-
-
-        initAudio();
-
-
-        dragging = true;
-
-        activePointerId =
-            e.pointerId;
-
-
-        const p =
-            getGamePointer(e);
-
-
-        startPointerX =
-            p.x;
-
-        startPointerY =
-            p.y;
-
-
-        power = 0;
-
-        bow.pull = 0;
-
-
-        powerBar.style.width =
-            "0%";
-
-
-        try {
-
-            canvas.setPointerCapture(
-                e.pointerId
-            );
-
-        }
-        catch (_) {}
-
-    }
-);
-
-
-/* =====================================================
-   POINTER MOVE
-===================================================== */
-
-canvas.addEventListener(
-    "pointermove",
-    (e) => {
-
-        if (!dragging)
-            return;
-
-        if (
-            e.pointerId !==
-            activePointerId
-        )
-            return;
-
-
-        const p =
-            getGamePointer(e);
-
-
-        const dx =
-            p.x -
-            startPointerX;
-
-
-        const dy =
-            p.y -
-            startPointerY;
-
-
-        /*
-           Aim
-        */
-
-        bow.angle =
-            clamp(
-
-                Math.atan2(
-                    dy,
-                    Math.abs(dx) +
-                    160 * gameScale
-                ),
-
-                -.65,
-
-                .65
-
-            );
-
-
-        /*
-           Drag left = power
-        */
-
-        const leftDrag =
-            Math.max(
-                0,
-                -dx
-            );
-
-
-        power =
-            clamp(
-
-                leftDrag /
-                (
-                    240 *
-                    gameScale
-                ),
-
-                0,
-
-                1
-
-            );
-
-
-        bow.pull =
-            power;
-
-
-        powerBar.style.width =
-            (
-                power *
-                100
-            ) +
-            "%";
-
-    }
-);
-
-
-/* =====================================================
-   POINTER UP
-===================================================== */
-
-function endPointer(
-    e
-) {
-
-    if (!dragging)
-        return;
-
-
-    if (
-        e.pointerId !==
-        activePointerId
-    )
-        return;
-
-
-    dragging = false;
-
-
-    try {
-
-        canvas.releasePointerCapture(
-            e.pointerId
-        );
-
-    }
-    catch (_) {}
-
-
-    activePointerId =
-        null;
-
-
-    if (
-        power >= .05
-    ) {
-
-        shoot();
-
-    }
-
-    else {
-
-        power = 0;
-
-        bow.pull = 0;
-
-        powerBar.style.width =
-            "0%";
-
-    }
-
+/* ================= DRAW ================= */
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  drawAimGuide();
+  drawTarget();
+  drawBow();
+  for(const a of arrows)drawArrow(a);
+  drawParticles();
+  drawHearts();
 }
 
+/* ================= BOW DRAWING ================= */
+function bowPath(h,curve,extra){
+  ctx.beginPath();
+  ctx.moveTo(0,-h/2);
+  ctx.quadraticCurveTo(curve+extra,0,0,h/2);
+}
 
-canvas.addEventListener(
-    "pointerup",
-    endPointer
-);
+function drawTips(tierColor,size,blur){
+  const h=getBowHeight();
+  for(const tipY of[-h/2,h/2]){
+    ctx.save();
+    ctx.translate(2*gameScale,tipY);
+    ctx.rotate(Math.PI/4);
+    ctx.fillStyle=tierColor;
+    ctx.shadowColor=tierColor;
+    ctx.shadowBlur=blur*gameScale;
+    ctx.fillRect(-size/2,-size/2,size,size);
+    ctx.restore();
+  }
+}
 
+function drawBow(){
+  const h=getBowHeight(),curve=getBowCurve(),pullDistance=getPullDistance();
+  const g=gameScale;
 
-canvas.addEventListener(
-    "pointercancel",
-    endPointer
-);
+  ctx.save();
+  ctx.translate(bow.x,bow.y);
+  ctx.rotate(bow.angle);
 
+  const bowTier=getBowTier(),tierColor=getBowColor();
+  const pulse=1+Math.sin(now*.008)*.08;
 
-/* =====================================================
-   SHOOT
-===================================================== */
+  if(bowTier>=1){
+    ctx.save();
+    ctx.globalCompositeOperation="lighter";
+    ctx.strokeStyle=tierColor;ctx.shadowColor=tierColor;
+    ctx.shadowBlur=5*g;ctx.lineWidth=8*g;
+    bowPath(h,curve,12*g);ctx.stroke();
+    ctx.restore();
+  }
 
-function shoot() {
+  if(bowTier>=2){
+    ctx.save();
+    ctx.strokeStyle=tierColor;ctx.shadowColor=tierColor;
+    ctx.shadowBlur=12*g;ctx.lineWidth=3*g*pulse;
+    ctx.beginPath();
+    ctx.moveTo(4*g,-h/2+7*g);
+    ctx.quadraticCurveTo(curve+4*g,0,4*g,h/2-7*g);
+    ctx.stroke();
+    ctx.restore();
+    drawTips(tierColor,7*g*pulse,13);
+  }
 
-    if (shooting)
-        return;
+  if(bowTier>=3){
+    ctx.save();
+    ctx.globalCompositeOperation="lighter";
+    ctx.strokeStyle=tierColor;ctx.shadowColor=tierColor;
+    ctx.shadowBlur=9*g;ctx.lineWidth=2*g;
+    for(const o of[-7,7]){
+      ctx.beginPath();
+      ctx.moveTo(o*g,-h*.42);
+      ctx.quadraticCurveTo((curve+o*.35)*g,0,o*g,h*.42);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
 
+  if(bowTier>=4){
+    const vipColor=tierColor;
+    const vipGlow=10+Math.min(combo-18,30)*.35;
 
-    shooting = true;
+    ctx.save();
+    ctx.globalCompositeOperation="lighter";
+    ctx.strokeStyle=vipColor;ctx.shadowColor=vipColor;
+    ctx.shadowBlur=vipGlow*g;ctx.lineWidth=9*g*pulse;ctx.lineCap="round";
+    bowPath(h,curve,10*g);ctx.stroke();
+    ctx.restore();
 
+    ctx.save();
+    ctx.strokeStyle=vipColor;ctx.shadowColor=vipColor;
+    ctx.shadowBlur=5*g;ctx.lineWidth=Math.max(2,2.5*g);
+    ctx.beginPath();
+    ctx.moveTo(5*g,-h/2+9*g);
+    ctx.quadraticCurveTo(curve-5*g,0,5*g,h/2-9*g);
+    ctx.stroke();
+    ctx.restore();
 
-    const shotPower =
-        power;
+    drawTips(vipColor,8*g,12);
 
+    ctx.save();
+    ctx.fillStyle=vipColor;ctx.shadowColor=vipColor;ctx.shadowBlur=14*g;
+    ctx.beginPath();ctx.arc(0,0,7*g,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle="#fff";ctx.shadowBlur=0;
+    ctx.beginPath();ctx.arc(0,0,2.2*g,0,Math.PI*2);ctx.fill();
+    ctx.restore();
 
-    const angle =
-        bow.angle;
+    if(bowTier>=6){
+      ctx.save();
+      ctx.globalCompositeOperation="lighter";
+      ctx.rotate(now*.0012);
+      ctx.strokeStyle=vipColor;ctx.shadowColor=vipColor;
+      ctx.shadowBlur=14*g;ctx.lineWidth=2*g;
+      ctx.beginPath();ctx.ellipse(0,0,19*g,8*g,0,0,Math.PI*2);ctx.stroke();
+      ctx.rotate(Math.PI/2);
+      ctx.beginPath();ctx.ellipse(0,0,19*g,8*g,0,0,Math.PI*2);ctx.stroke();
+      ctx.restore();
+    }
 
+    if(bowTier>=7){
+      ctx.save();
+      ctx.globalCompositeOperation="lighter";
+      ctx.strokeStyle=vipColor;ctx.shadowColor=vipColor;
+      ctx.shadowBlur=24*g;ctx.lineWidth=3*g;
+      ctx.beginPath();ctx.arc(0,0,14*g*pulse,0,Math.PI*2);ctx.stroke();
+      ctx.restore();
+    }
+  }
 
-    const speed =
-        (
-            430 +
-            shotPower * 1050
-        ) *
-        Math.max(
-            .75,
-            gameScale
-        );
+  /* BASIC BOW */
+  bowPath(h,curve,10*g);
+  ctx.strokeStyle=tierColor;
+  ctx.lineWidth=Math.max(2.5,5*g);
+  ctx.lineCap="round";
+  ctx.stroke();
 
+  /* STRING */
+  ctx.beginPath();
+  ctx.moveTo(0,-h/2);
+  ctx.lineTo(-pullDistance,0);
+  ctx.lineTo(0,h/2);
 
-    arrows.push({
+  const bowColor=tierColor;
+  if(combo>=6){
+    ctx.strokeStyle=bowColor;ctx.shadowBlur=8*g;ctx.shadowColor=bowColor;
+  }else{
+    ctx.strokeStyle="#aaa";ctx.shadowBlur=0;
+  }
+  ctx.lineWidth=Math.max(1,2*g);
+  ctx.stroke();
+  ctx.shadowBlur=0;
 
-        x:
-            bow.x,
+  /* STRING FIRE */
+  if(combo>=6){
+    const sf=.78+Math.min(combo-6,30)*.018;
+    drawFire(-pullDistance*.30,h*.35,sf*.58,g*.42);
+    drawFire(-pullDistance*.58,h*.21,sf*.68,g*.48);
+    drawFire(-pullDistance*.80,h*.10,sf*.58,g*.40);
+  }
 
-        y:
-            bow.y,
+  /* AIMING ARROW (fixed: len/head/feather were undefined in your edit) */
+  if(dragging&&power>.01){
+    ctx.save();
+    ctx.translate(-pullDistance,0);
 
-        vx:
-            Math.cos(angle) *
-            speed,
+    const len=88*g,head=13*g,feather=17*g;
 
-        vy:
-            Math.sin(angle) *
-            speed,
+    /* faint glow line */
+    ctx.save();
+    ctx.globalAlpha=.25;
+    ctx.shadowColor=bowColor;
+    ctx.shadowBlur=8*g;
+    ctx.strokeStyle=bowColor;
+    ctx.lineWidth=1.5*g;
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(len,0);
+    ctx.stroke();
+    ctx.restore();
 
-        rotation:
-            angle,
+    /* shaft */
+    ctx.strokeStyle=bowColor;
+    ctx.lineWidth=Math.max(1,2*g);
+    ctx.beginPath();
+    ctx.moveTo(-8*g,0);ctx.lineTo(len,0);
+    ctx.stroke();
 
-        length:
-            82 *
-            gameScale,
+    /* head */
+    ctx.beginPath();
+    ctx.moveTo(len,0);ctx.lineTo(len-head,-6*g);
+    ctx.moveTo(len,0);ctx.lineTo(len-head,6*g);
+    ctx.stroke();
 
-        gravity:
-            180 *
-            gameScale,
+    /* feathers */
+    ctx.beginPath();
+    ctx.moveTo(7*g,0);ctx.lineTo(-feather,-6*g);
+    ctx.moveTo(7*g,0);ctx.lineTo(-feather,6*g);
+    ctx.stroke();
 
-        alive:
-            true
+    if(combo>=6){
+      const af=.85+Math.min(combo-6,30)*.025;
+      drawFire(len*.62,0,af*.62,g*.48);
+      drawFire(len*.18,0,af*.48,g*.38);
+      drawFire(-6*g,0,af*.58,g*.42);
+    }
+    ctx.restore();
+  }
 
+  /* FIRE MODE */
+  if(combo>=6){
+    const fp=.85+Math.min(combo-6,30)*.025;
+    drawFire(2*g,-h/2,fp,g*.72);
+    drawFire(2*g,h/2,fp,g*.72);
+    drawFire(-pullDistance,0,fp+.1,g);
+  }
+
+  ctx.restore();
+}
+
+/* ================= AIM GUIDE ================= */
+function drawAimGuide(){
+  if(!dragging||power<=.05)return;
+
+  const g=gameScale,angle=bow.angle,speed=arrowSpeed(power),gravity=180*g;
+  const startX=bow.x,startY=bow.y,tr=getTargetRadius();
+  const px=t=>startX+Math.cos(angle)*speed*t;
+  const py=t=>startY+Math.sin(angle)*speed*t+.5*gravity*t*t;
+
+  let hitX=null,hitY=null,previewX=startX,previewY=startY;
+
+  for(let t=.05;t<=2.8;t+=.035){
+    const x=px(t),y=py(t);
+    previewX=x;previewY=y;
+    const dx=x-target.x,dy=y-target.y;
+    if(hitX===null&&dx*dx+dy*dy<=tr*tr){hitX=x;hitY=y;break;}
+    if(x>W+100||y>H+100||y<-H)break;
+  }
+
+  const aimX=hitX!==null?hitX:previewX;
+  const aimY=hitY!==null?hitY:previewY;
+  const color=getBowColor();
+  const r=Math.max(9,12*g);
+
+  ctx.save();
+  ctx.fillStyle=color;
+  ctx.globalAlpha=.28;
+  ctx.shadowBlur=3*g;
+  ctx.shadowColor=color;
+
+  for(let t=.08;t<=1.2;t+=.08){
+    const x=px(t),y=py(t);
+    if(x>W+20||y>H+20||y<-20)break;
+    ctx.beginPath();
+    ctx.arc(x,y,Math.max(1.2,2.2*g),0,Math.PI*2);
+    ctx.fill();
+  }
+
+  ctx.strokeStyle=color;
+  ctx.lineWidth=Math.max(1,1.3*g);
+  ctx.shadowBlur=4*g;
+
+  ctx.beginPath();
+  ctx.arc(aimX,aimY,r,0,Math.PI*2);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(aimX-r*1.8,aimY);ctx.lineTo(aimX-r*.65,aimY);
+  ctx.moveTo(aimX+r*.65,aimY);ctx.lineTo(aimX+r*1.8,aimY);
+  ctx.moveTo(aimX,aimY-r*1.8);ctx.lineTo(aimX,aimY-r*.65);
+  ctx.moveTo(aimX,aimY+r*.65);ctx.lineTo(aimX,aimY+r*1.8);
+  ctx.stroke();
+
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  ctx.arc(aimX,aimY,Math.max(2,3*g),0,Math.PI*2);
+  ctx.fill();
+
+  ctx.shadowBlur=0;
+  ctx.font=`bold ${Math.max(8,10*g)}px Arial`;
+  ctx.textAlign="center";
+  ctx.fillText(hitX!==null?"AIM":"PATH",aimX,aimY-r*2.4);
+  ctx.restore();
+}
+
+/* ================= FIRE SPRITE ================= */
+const FIRE_F0=40,FIRE_C=100;
+const fireSprites=new Map();
+
+function getFireSprite(color){
+  let c=fireSprites.get(color);
+  if(c)return c;
+
+  c=document.createElement("canvas");
+  c.width=c.height=200;
+  const g=c.getContext("2d"),F=FIRE_F0;
+  g.translate(FIRE_C,FIRE_C);
+
+  g.shadowBlur=18*F/16;
+  g.shadowColor=color;
+  g.beginPath();
+  g.moveTo(0,F);
+  g.quadraticCurveTo(-F*.85,F*.15,-F*.25,-F*.55);
+  g.quadraticCurveTo(0,-F*1.15,F*.25,-F*.55);
+  g.quadraticCurveTo(F*.85,F*.15,0,F);
+  g.fillStyle=color;
+  g.fill();
+
+  g.shadowBlur=F*.5;
+  g.beginPath();
+  g.moveTo(0,F*.72);
+  g.quadraticCurveTo(-F*.4,F*.15,0,-F*.45);
+  g.quadraticCurveTo(F*.4,F*.15,0,F*.72);
+  g.fillStyle="#fff";
+  g.fill();
+
+  fireSprites.set(color,c);
+  return c;
+}
+
+function drawFire(x,y,intensity=1,scale=1){
+  const k=(16+Math.sin(now*.012)*3)*scale*intensity/FIRE_F0;
+  ctx.save();
+  ctx.globalCompositeOperation="lighter";
+  ctx.drawImage(getFireSprite(getBowColor()),x-FIRE_C*k,y-FIRE_C*k,200*k,200*k);
+  ctx.restore();
+}
+
+/* ================= TARGET ================= */
+function drawTarget(){
+  const r=getTargetRadius();
+  const rings=[[1,"#e00000"],[.72,"#fff"],[.49,"#e00000"],[.27,"#fff"],[.14,"#e00000"]];
+  for(const[k,col]of rings){
+    ctx.beginPath();
+    ctx.arc(target.x,target.y,r*k,0,Math.PI*2);
+    ctx.fillStyle=col;
+    ctx.fill();
+  }
+}
+
+/* ================= ARROW ================= */
+function drawArrow(arrow){
+  const g=gameScale,head=13*g,feather=7*g,color=getBowColor();
+
+  ctx.save();
+  ctx.translate(arrow.x,arrow.y);
+  ctx.rotate(arrow.rotation);
+  ctx.strokeStyle=color;
+  ctx.lineWidth=Math.max(1,2*g);
+
+  ctx.beginPath();
+  ctx.moveTo(0,0);ctx.lineTo(arrow.length,0);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(arrow.length,0);ctx.lineTo(arrow.length-head,-6*g);
+  ctx.moveTo(arrow.length,0);ctx.lineTo(arrow.length-head,6*g);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(7*g,0);ctx.lineTo(-feather,-6*g);
+  ctx.moveTo(7*g,0);ctx.lineTo(-feather,6*g);
+  ctx.stroke();
+
+  if(combo>=6){
+    drawFire(8*g,0,.75+Math.min(combo-6,30)*.02,g*.75);
+  }
+  ctx.restore();
+}
+
+/* ================= HIT ================= */
+function hitTarget(){
+  combo++;
+  if(combo>highestCombo)highestCombo=combo;
+  updateComboHud(true);
+  if(combo>=MOVE_COMBO)targetMoveActive=true;
+  playHitSound();
+
+  for(let i=0;i<12;i++){
+    hearts.push({
+      x:target.x,y:target.y,
+      vx:(Math.random()-.5)*180,
+      vy:-180-Math.random()*220,
+      life:.55,
+      size:8+Math.random()*8
     });
+  }
 
-
-    power = 0;
-
-    bow.pull = 0;
-
-
-    powerBar.style.width =
-        "0%";
-
-
-    playShootSound();
-
+  showMessage(pickPraise(),"love",2000);
+  setTimeout(()=>moveTarget(true),500);
 }
 
-
-/* =====================================================
-   SHOOT SOUND
-===================================================== */
-
-function playShootSound() {
-
-    if (!audioCtx)
-        return;
-
-
-    const osc =
-        audioCtx.createOscillator();
-
-    const gain =
-        audioCtx.createGain();
-
-
-    osc.type =
-        "triangle";
-
-
-    osc.frequency.setValueAtTime(
-        180,
-        audioCtx.currentTime
-    );
-
-
-    osc.frequency.exponentialRampToValueAtTime(
-        65,
-        audioCtx.currentTime + .2
-    );
-
-
-    gain.gain.setValueAtTime(
-        .08,
-        audioCtx.currentTime
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-        .001,
-        audioCtx.currentTime + .2
-    );
-
-
-    osc.connect(gain);
-
-    gain.connect(
-        audioCtx.destination
-    );
-
-
-    osc.start();
-
-    osc.stop(
-        audioCtx.currentTime +
-        .2
-    );
-
+/* ================= MESSAGE ================= */
+function showMessage(text,type,duration){
+  clearTimeout(messageTimer);
+  messageMain.textContent=text;
+  message.classList.remove("show","miss","love");
+  message.classList.add(type);
+  void message.offsetWidth;
+  setTimeout(()=>message.classList.add("show"),30);
+  messageTimer=setTimeout(()=>message.classList.remove("show"),duration);
 }
 
-
-/* =====================================================
-   HIT SOUND
-===================================================== */
-
-function playHitSound() {
-
-    if (!audioCtx)
-        return;
-
-
-    const osc =
-        audioCtx.createOscillator();
-
-    const gain =
-        audioCtx.createGain();
-
-
-    osc.type =
-        "sine";
-
-
-    osc.frequency.setValueAtTime(
-        500,
-        audioCtx.currentTime
-    );
-
-
-    osc.frequency.exponentialRampToValueAtTime(
-        950,
-        audioCtx.currentTime + .4
-    );
-
-
-    gain.gain.setValueAtTime(
-        .12,
-        audioCtx.currentTime
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-        .001,
-        audioCtx.currentTime + .5
-    );
-
-
-    osc.connect(gain);
-
-    gain.connect(
-        audioCtx.destination
-    );
-
-
-    osc.start();
-
-    osc.stop(
-        audioCtx.currentTime +
-        .5
-    );
-
+/* ================= PARTICLES ================= */
+function updateParticles(dt){
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.x+=p.vx*dt;p.y+=p.vy*dt;
+    p.vy+=120*dt;
+    p.life-=dt;
+    if(p.life<=0){particles[i]=particles[particles.length-1];particles.pop();}
+  }
 }
 
-
-/* =====================================================
-   UPDATE
-===================================================== */
-
-let lastTime =
-    performance.now();
-
-
-function update(time) {
-
-    const dt =
-        Math.min(
-            (
-                time -
-                lastTime
-            ) / 1000,
-
-            .033
-        );
-
-
-    lastTime =
-        time;
-
-
-    /*
-       ARROWS
-    */
-
-    for (
-        let i =
-            arrows.length - 1;
-
-        i >= 0;
-
-        i--
-    ) {
-
-        const arrow =
-            arrows[i];
-
-
-        arrow.x +=
-            arrow.vx *
-            dt;
-
-
-        arrow.y +=
-            arrow.vy *
-            dt;
-
-
-        arrow.vy +=
-            arrow.gravity *
-            dt;
-
-
-        arrow.rotation =
-            Math.atan2(
-                arrow.vy,
-                arrow.vx
-            );
-
-
-        /*
-           Arrow tip
-        */
-
-        const tipX =
-            arrow.x +
-            Math.cos(
-                arrow.rotation
-            ) *
-            arrow.length;
-
-
-        const tipY =
-            arrow.y +
-            Math.sin(
-                arrow.rotation
-            ) *
-            arrow.length;
-
-
-        /*
-           HIT
-        */
-
-        const distance =
-            Math.hypot(
-
-                tipX -
-                target.x,
-
-                tipY -
-                target.y
-
-            );
-
-
-        if (
-            distance <
-            getTargetRadius()
-        ) {
-
-            arrow.alive =
-                false;
-
-
-            hitTarget();
-
-
-            continue;
-
-        }
-
-
-        /*
-           MISS
-        */
-
-        if (
-
-            arrow.x >
-                W + 200 ||
-
-            arrow.x <
-                -200 ||
-
-            arrow.y >
-                H + 200 ||
-
-            arrow.y <
-                -200
-
-        ) {
-
-            arrow.alive =
-                false;
-
-
-            showMessage(
-                "MISS YOU!",
-                "miss",
-                1500
-            );
-
-        }
-
-    }
-
-
-    arrows =
-        arrows.filter(
-            a =>
-                a.alive
-        );
-
-
-    if (
-        shooting &&
-        arrows.length === 0
-    ) {
-
-        shooting = false;
-
-    }
-
-
-    updateParticles();
-
-    updateHearts();
-
-
-    draw();
-
-
-    requestAnimationFrame(
-        update
-    );
-
-}
-
-
-/* =====================================================
-   DRAW
-===================================================== */
-
-function draw() {
-
-    ctx.clearRect(
-        0,
-        0,
-        W,
-        H
-    );
-
-
-    drawTarget();
-
-    drawBow();
-
-
-    for (
-        const arrow of arrows
-    ) {
-
-        drawArrow(
-            arrow
-        );
-
-    }
-
-
-    drawParticles();
-
-    drawHearts();
-
-}
-
-
-/* =====================================================
-   BOW
-===================================================== */
-
-function drawBow() {
-
-    const h =
-        getBowHeight();
-
-    const curve =
-        getBowCurve();
-
-    const pullDistance =
-        getPullDistance();
-
-
-    ctx.save();
-
-
-    ctx.translate(
-        bow.x,
-        bow.y
-    );
-
-
-    ctx.rotate(
-        bow.angle
-    );
-
-
-    /*
-       Bow
-    */
-
+function drawParticles(){
+  for(const p of particles){
+    ctx.globalAlpha=Math.max(0,p.life);
     ctx.beginPath();
-
-
-    ctx.moveTo(
-        0,
-        -h / 2
-    );
-
-
-    ctx.quadraticCurveTo(
-
-        curve +
-        10 *
-        gameScale,
-
-        0,
-
-        0,
-
-        h / 2
-
-    );
-
-
-    ctx.strokeStyle =
-        "#e5e5e5";
-
-
-    ctx.lineWidth =
-        Math.max(
-            2.5,
-            5 *
-            gameScale
-        );
-
-
-    ctx.lineCap =
-        "round";
-
-
-    ctx.stroke();
-
-
-    /*
-       String
-    */
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-        0,
-        -h / 2
-    );
-
-
-    ctx.lineTo(
-        -pullDistance,
-        0
-    );
-
-
-    ctx.lineTo(
-        0,
-        h / 2
-    );
-
-
-    ctx.strokeStyle =
-        "#aaa";
-
-
-    ctx.lineWidth =
-        Math.max(
-            1,
-            2 *
-            gameScale
-        );
-
-
-    ctx.stroke();
-
-
-    /*
-       Aiming arrow
-    */
-
-    if (
-        dragging &&
-        power > .01
-    ) {
-
-        ctx.save();
-
-
-        ctx.translate(
-            -pullDistance,
-            0
-        );
-
-
-        const arrowLength =
-            88 *
-            gameScale;
-
-
-        const arrowHead =
-            13 *
-            gameScale;
-
-
-        const feather =
-            17 *
-            gameScale;
-
-
-        /*
-           Shaft
-        */
-
-        ctx.beginPath();
-
-
-        ctx.moveTo(
-            -8 *
-            gameScale,
-
-            0
-        );
-
-
-        ctx.lineTo(
-            arrowLength,
-            0
-        );
-
-
-        ctx.strokeStyle =
-            "#eee";
-
-
-        ctx.lineWidth =
-            Math.max(
-                1,
-                2 *
-                gameScale
-            );
-
-
-        ctx.stroke();
-
-
-        /*
-           Arrow head
-        */
-
-        ctx.beginPath();
-
-
-        ctx.moveTo(
-            arrowLength,
-            0
-        );
-
-
-        ctx.lineTo(
-
-            arrowLength -
-            arrowHead,
-
-            -6 *
-            gameScale
-
-        );
-
-
-        ctx.moveTo(
-            arrowLength,
-            0
-        );
-
-
-        ctx.lineTo(
-
-            arrowLength -
-            arrowHead,
-
-            6 *
-            gameScale
-
-        );
-
-
-        ctx.strokeStyle =
-            "#fff";
-
-
-        ctx.stroke();
-
-
-        /*
-           Feather
-        */
-
-        ctx.beginPath();
-
-
-        ctx.moveTo(
-            7 *
-            gameScale,
-
-            0
-        );
-
-
-        ctx.lineTo(
-
-            -feather,
-
-            -6 *
-            gameScale
-
-        );
-
-
-        ctx.moveTo(
-            7 *
-            gameScale,
-
-            0
-        );
-
-
-        ctx.lineTo(
-
-            -feather,
-
-            6 *
-            gameScale
-
-        );
-
-
-        ctx.strokeStyle =
-            "#999";
-
-
-        ctx.stroke();
-
-
-        ctx.restore();
-
-    }
-
-
-    ctx.restore();
-
-}
-
-
-/* =====================================================
-   TARGET
-===================================================== */
-
-function drawTarget() {
-
-    const x =
-        target.x;
-
-    const y =
-        target.y;
-
-    const r =
-        getTargetRadius();
-
-
-    /*
-       Outer red
-    */
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        r,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fillStyle =
-        "#e00000";
-
-
+    ctx.arc(p.x,p.y,p.size*gameScale,0,Math.PI*2);
+    ctx.fillStyle="#fff";
     ctx.fill();
-
-
-    /*
-       White
-    */
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        r * .72,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fillStyle =
-        "#fff";
-
-
-    ctx.fill();
-
-
-    /*
-       Red
-    */
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        r * .49,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fillStyle =
-        "#e00000";
-
-
-    ctx.fill();
-
-
-    /*
-       White
-    */
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        r * .27,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fillStyle =
-        "#fff";
-
-
-    ctx.fill();
-
-
-    /*
-       Bullseye
-    */
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-        x,
-        y,
-        r * .14,
-        0,
-        Math.PI * 2
-    );
-
-
-    ctx.fillStyle =
-        "#e00000";
-
-
-    ctx.fill();
-
+  }
+  ctx.globalAlpha=1;
 }
 
-
-/* =====================================================
-   ARROW
-===================================================== */
-
-function drawArrow(
-    arrow
-) {
-
-    ctx.save();
-
-
-    ctx.translate(
-        arrow.x,
-        arrow.y
-    );
-
-
-    ctx.rotate(
-        arrow.rotation
-    );
-
-
-    const head =
-        13 *
-        gameScale;
-
-
-    const feather =
-        7 *
-        gameScale;
-
-
-    /*
-       Shaft
-    */
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-        0,
-        0
-    );
-
-
-    ctx.lineTo(
-        arrow.length,
-        0
-    );
-
-
-    ctx.strokeStyle =
-        "#eee";
-
-
-    ctx.lineWidth =
-        Math.max(
-            1,
-            2 *
-            gameScale
-        );
-
-
-    ctx.stroke();
-
-
-    /*
-       Head
-    */
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-        arrow.length,
-        0
-    );
-
-
-    ctx.lineTo(
-
-        arrow.length -
-        head,
-
-        -6 *
-        gameScale
-
-    );
-
-
-    ctx.moveTo(
-        arrow.length,
-        0
-    );
-
-
-    ctx.lineTo(
-
-        arrow.length -
-        head,
-
-        6 *
-        gameScale
-
-    );
-
-
-    ctx.strokeStyle =
-        "#fff";
-
-
-    ctx.stroke();
-
-
-    /*
-       Feather
-    */
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-        7 *
-        gameScale,
-
-        0
-    );
-
-
-    ctx.lineTo(
-        -feather,
-        -6 *
-        gameScale
-    );
-
-
-    ctx.moveTo(
-        7 *
-        gameScale,
-
-        0
-    );
-
-
-    ctx.lineTo(
-        -feather,
-        6 *
-        gameScale
-    );
-
-
-    ctx.strokeStyle =
-        "#999";
-
-
-    ctx.stroke();
-
-
-    ctx.restore();
-
+/* ================= HEARTS ================= */
+function updateHearts(dt){
+  for(let i=hearts.length-1;i>=0;i--){
+    const h=hearts[i];
+    h.x+=h.vx*dt;h.y+=h.vy*dt;
+    h.vy+=35*dt;
+    h.life-=dt;
+    if(h.life<=0){hearts[i]=hearts[hearts.length-1];hearts.pop();}
+  }
 }
 
-
-/* =====================================================
-   HIT
-===================================================== */
-
-function hitTarget() {
-
-    playHitSound();
-
-
-    /*
-       Particles
-    */
-
-    for (
-        let i = 0;
-        i < 35;
-        i++
-    ) {
-
-        const angle =
-            Math.random() *
-            Math.PI *
-            2;
-
-
-        const speed =
-            60 +
-            Math.random() *
-            250;
-
-
-        particles.push({
-
-            x:
-                target.x,
-
-            y:
-                target.y,
-
-            vx:
-                Math.cos(angle) *
-                speed,
-
-            vy:
-                Math.sin(angle) *
-                speed,
-
-            life:
-                .5 +
-                Math.random() *
-                .6,
-
-            size:
-                1 +
-                Math.random() *
-                3
-
-        });
-
-    }
-
-
-    /*
-       Hearts
-    */
-
-    for (
-        let i = 0;
-        i < 12;
-        i++
-    ) {
-
-        hearts.push({
-
-            x:
-                target.x,
-
-            y:
-                target.y,
-
-            vx:
-                (
-                    Math.random() -
-                    .5
-                ) *
-                100,
-
-            vy:
-                -40 -
-                Math.random() *
-                100,
-
-            life:
-                1.5,
-
-            size:
-                8 +
-                Math.random() *
-                8
-
-        });
-
-    }
-
-
-    /*
-       LOVE YOU
-    */
-
-    showMessage(
-        "LOVE YOU",
-        "love",
-        2000
-    );
-
-
-    /*
-       Move target
-    */
-
-    setTimeout(
-        () => {
-
-            moveTarget(true);
-
-        },
-        500
-    );
-
+let heartSprite=null;
+function getHeartSprite(){
+  if(heartSprite)return heartSprite;
+  heartSprite=document.createElement("canvas");
+  heartSprite.width=heartSprite.height=64;
+  const g=heartSprite.getContext("2d");
+  g.font="40px Arial";
+  g.fillStyle="#ff4b18";
+  g.textAlign="center";
+  g.fillText("♥",32,48);
+  return heartSprite;
 }
 
-
-/* =====================================================
-   MESSAGE
-===================================================== */
-
-function showMessage(
-    text,
-    type,
-    duration
-) {
-
-    clearTimeout(
-        messageTimer
-    );
-
-
-    messageMain.textContent =
-        text;
-
-
-    message.classList.remove(
-        "show",
-        "miss",
-        "love"
-    );
-
-
-    message.classList.add(
-        type
-    );
-
-
-    void message.offsetWidth;
-
-
-    setTimeout(
-        () => {
-
-            message.classList.add(
-                "show"
-            );
-
-        },
-        30
-    );
-
-
-    messageTimer =
-        setTimeout(
-            () => {
-
-                message.classList.remove(
-                    "show"
-                );
-
-            },
-            duration
-        );
-
+function drawHearts(){
+  const s=getHeartSprite();
+  for(const h of hearts){
+    const k=h.size*gameScale/40;
+    ctx.globalAlpha=Math.max(0,h.life);
+    ctx.drawImage(s,h.x-32*k,h.y-48*k,64*k,64*k);
+  }
+  ctx.globalAlpha=1;
 }
 
-
-/* =====================================================
-   PARTICLES
-===================================================== */
-
-function updateParticles() {
-
-    for (
-        let i =
-            particles.length - 1;
-
-        i >= 0;
-
-        i--
-    ) {
-
-        const p =
-            particles[i];
-
-
-        p.x +=
-            p.vx *
-            .016;
-
-
-        p.y +=
-            p.vy *
-            .016;
-
-
-        p.vy +=
-            120 *
-            .016;
-
-
-        p.life -=
-            .016;
-
-
-        if (
-            p.life <= 0
-        ) {
-
-            particles.splice(
-                i,
-                1
-            );
-
-        }
-
-    }
-
-}
-
-
-function drawParticles() {
-
-    for (
-        const p of particles
-    ) {
-
-        ctx.globalAlpha =
-            Math.max(
-                0,
-                p.life
-            );
-
-
-        ctx.beginPath();
-
-
-        ctx.arc(
-            p.x,
-            p.y,
-            p.size *
-            gameScale,
-            0,
-            Math.PI * 2
-        );
-
-
-        ctx.fillStyle =
-            "#fff";
-
-
-        ctx.fill();
-
-    }
-
-
-    ctx.globalAlpha =
-        1;
-
-}
-
-
-/* =====================================================
-   HEARTS
-===================================================== */
-
-function updateHearts() {
-
-    for (
-        let i =
-            hearts.length - 1;
-
-        i >= 0;
-
-        i--
-    ) {
-
-        const heart =
-            hearts[i];
-
-
-        heart.x +=
-            heart.vx *
-            .016;
-
-
-        heart.y +=
-            heart.vy *
-            .016;
-
-
-        heart.vy +=
-            35 *
-            .016;
-
-
-        heart.life -=
-            .016;
-
-
-        if (
-            heart.life <= 0
-        ) {
-
-            hearts.splice(
-                i,
-                1
-            );
-
-        }
-
-    }
-
-}
-
-
-function drawHearts() {
-
-    for (
-        const heart of hearts
-    ) {
-
-        ctx.globalAlpha =
-            Math.max(
-                0,
-                heart.life
-            );
-
-
-        ctx.font =
-            `${
-                heart.size *
-                gameScale
-            }px Arial`;
-
-
-        ctx.fillStyle =
-            "#ff4b18";
-
-
-        ctx.textAlign =
-            "center";
-
-
-        ctx.fillText(
-            "♥",
-
-            heart.x,
-
-            heart.y
-
-        );
-
-    }
-
-
-    ctx.globalAlpha =
-        1;
-
-}
-
-
-/* =====================================================
-   CLAMP
-===================================================== */
-
-function clamp(
-    value,
-    min,
-    max
-) {
-
-    return Math.max(
-        min,
-        Math.min(
-            max,
-            value
-        )
-    );
-
-}
-
-
-/* =====================================================
-   INITIALIZE
-===================================================== */
-
-resize();
-
-requestAnimationFrame(
-    update
-);
-
+/* ================= CLAMP ================= */
+function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+
+/* ================= INIT ================= */
+bootLandscape();
+requestAnimationFrame(update);
 </script>
-
 </body>
-
 </html>
