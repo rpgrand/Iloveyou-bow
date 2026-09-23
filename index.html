@@ -754,12 +754,18 @@ function drawAimGuide(){
 
   const aimX=hitX!==null?hitX:previewX;
   const aimY=hitY!==null?hitY:previewY;
+  const dist = Math.hypot(aimX - target.x, aimY - target.y);
+
+if (dist < getTargetRadius() * 2) {
+    ctx.restore();
+    return;
+}
   const color=getBowColor();
   const r=Math.max(9,12*g);
 
   ctx.save();
   ctx.fillStyle=color;
-  ctx.globalAlpha=.28;
+ctx.globalAlpha=.07;
   ctx.shadowBlur=3*g;
   ctx.shadowColor=color;
 
@@ -981,3 +987,4 @@ requestAnimationFrame(update);
 </script>
 </body>
 </html>
+ 
