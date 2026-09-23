@@ -1,0 +1,3069 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<title>FOR YOU</title>
+
+
+<style>
+
+/* =====================================================
+   RESET
+===================================================== */
+
+* {
+    box-sizing: border-box;
+
+    user-select: none;
+    -webkit-user-select: none;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+html,
+body {
+
+    margin: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    background: #000;
+
+    font-family: Arial, sans-serif;
+
+}
+
+
+/* =====================================================
+   CANVAS
+===================================================== */
+
+canvas {
+
+    display: block;
+
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: #000;
+
+    cursor: crosshair;
+
+    touch-action: none;
+
+}
+
+
+/* =====================================================
+   START SCREEN
+===================================================== */
+
+#startScreen {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: #000;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 20;
+
+    cursor: pointer;
+
+}
+
+
+#startScreen h1 {
+
+    margin: 0 0 16px;
+
+    color: #fff;
+
+    font-size: clamp(
+        28px,
+        5vw,
+        48px
+    );
+
+    font-weight: 300;
+
+    letter-spacing: 8px;
+
+    animation:
+        breathe 2s infinite ease-in-out;
+
+}
+
+
+#startScreen p {
+
+    margin: 0;
+
+    color: #666;
+
+    font-size: 11px;
+
+    letter-spacing: 4px;
+
+}
+
+
+@keyframes breathe {
+
+    0%,
+    100% {
+
+        opacity: .4;
+
+        transform:
+            scale(1);
+
+    }
+
+    50% {
+
+        opacity: 1;
+
+        transform:
+            scale(1.04);
+
+    }
+
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+#message {
+
+    position: fixed;
+
+    top: 43%;
+    left: 50%;
+
+    width: 100%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.6)
+        rotate(-2deg);
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    z-index: 15;
+
+    white-space: nowrap;
+
+    text-align: center;
+
+    transition:
+        opacity .35s ease,
+        transform .65s cubic-bezier(.2,.9,.2,1);
+
+}
+
+
+#message.show {
+
+    opacity: 1;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1)
+        rotate(-2deg);
+
+}
+
+
+.message-main {
+
+    font-family:
+        Impact,
+        "Arial Black",
+        Arial,
+        sans-serif;
+
+    font-size:
+        clamp(
+            38px,
+            7vw,
+            88px
+        );
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+    line-height: .9;
+
+    text-transform: uppercase;
+
+    -webkit-text-stroke:
+        1px rgba(0,0,0,.15);
+
+}
+
+
+/* =====================================================
+   MISS
+===================================================== */
+
+#message.miss .message-main {
+
+    color: #bcbcbc;
+
+    text-shadow:
+
+        3px 3px 0 #777,
+
+        6px 6px 0
+        rgba(0,0,0,.45);
+
+}
+
+
+/* =====================================================
+   LOVE
+===================================================== */
+
+#message.love .message-main {
+
+    color: #ff4b18;
+
+    text-shadow:
+
+        3px 3px 0 #8d250b,
+
+        6px 6px 0
+        rgba(0,0,0,.45);
+
+}
+
+
+/* =====================================================
+   HEART
+===================================================== */
+
+.message-heart {
+
+    margin-top: 14px;
+
+    font-size: 22px;
+
+    color: #ff4b18;
+
+    animation:
+        heartPulse 1s infinite ease-in-out;
+
+}
+
+
+@keyframes heartPulse {
+
+    0%,
+    100% {
+
+        transform:
+            scale(1);
+
+    }
+
+    50% {
+
+        transform:
+            scale(1.25);
+
+    }
+
+}
+
+
+/* =====================================================
+   POWER BAR
+===================================================== */
+
+#powerContainer {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 28px;
+
+    transform:
+        translateX(-50%);
+
+    width: min(
+        260px,
+        45vw
+    );
+
+    height: 5px;
+
+    background: #222;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    opacity: 0;
+
+    z-index: 10;
+
+}
+
+
+#powerBar {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: #fff;
+
+    box-shadow:
+        0 0 12px #fff;
+
+}
+
+
+/* =====================================================
+   INSTRUCTION
+===================================================== */
+
+#instruction {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: 47px;
+
+    transform:
+        translateX(-50%);
+
+    width: 100%;
+
+    color: #555;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    text-align: center;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    white-space: nowrap;
+
+    z-index: 10;
+
+}
+
+
+/* =====================================================
+   MUSIC BUTTON
+===================================================== */
+
+#musicButton {
+
+    position: fixed;
+
+    top: 18px;
+
+    right: 18px;
+
+    width: 42px;
+    height: 42px;
+
+    border:
+        1px solid #333;
+
+    border-radius: 50%;
+
+    background:
+        rgba(0,0,0,.75);
+
+    color: #aaa;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+    z-index: 30;
+
+    display: none;
+
+}
+
+
+#musicButton:hover {
+
+    color: #fff;
+
+    border-color: #fff;
+
+}
+
+
+/* =====================================================
+   MOBILE LANDSCAPE GAME MODE
+   Portrait phone -> automatic sideways game view
+===================================================== */
+
+@media screen and (max-width: 768px) and (orientation: portrait) {
+
+    html,
+    body {
+
+        width: 100%;
+        height: 100%;
+
+        margin: 0;
+        padding: 0;
+
+        overflow: hidden;
+
+        background: #000;
+
+        touch-action: none;
+    }
+
+
+    /*
+       Rotate the whole game sideways.
+
+       Portrait phone:
+       1080 x 1920
+
+       Becomes:
+       1920 x 1080
+    */
+
+    body {
+
+        position: fixed;
+
+        width: 100vh;
+        height: 100vw;
+
+        top: 50%;
+        left: 50%;
+
+        transform:
+            translate(-50%, -50%)
+            rotate(90deg);
+
+        transform-origin: center center;
+
+        overflow: hidden;
+    }
+
+
+    /*
+       GAME CANVAS
+
+       Keep the content landscape.
+    */
+
+    canvas {
+
+        position: fixed;
+
+        left: 0;
+        top: 0;
+
+        width: 100vh !important;
+        height: 100vw !important;
+
+        min-width: 0 !important;
+        min-height: 0 !important;
+
+        max-width: none !important;
+        max-height: none !important;
+
+        display: block;
+
+        touch-action: none;
+    }
+
+
+    /*
+       START SCREEN
+
+       Same landscape size as canvas.
+    */
+
+    #startScreen {
+
+        position: fixed;
+
+        left: 0;
+        top: 0;
+
+        width: 100vh !important;
+        height: 100vw !important;
+
+        min-width: 0 !important;
+        min-height: 0 !important;
+
+        max-width: none !important;
+        max-height: none !important;
+
+        transform: none;
+
+        display: flex;
+
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    /*
+       MESSAGE
+    */
+
+    #message {
+
+        position: fixed;
+
+        left: 50%;
+        top: 43%;
+
+        width: 100%;
+
+        transform:
+            translate(-50%, -50%)
+            scale(.6)
+            rotate(-2deg);
+    }
+
+
+    #message.show {
+
+        transform:
+            translate(-50%, -50%)
+            scale(1)
+            rotate(-2deg);
+    }
+
+
+    /*
+       POWER BAR
+    */
+
+    #powerContainer {
+
+        position: fixed;
+
+        left: 50%;
+
+        bottom: 25px;
+
+        width: 200px;
+
+        transform:
+            translateX(-50%);
+    }
+
+
+    /*
+       INSTRUCTION
+    */
+
+    #instruction {
+
+        position: fixed;
+
+        left: 50%;
+
+        bottom: 45px;
+
+        width: 100%;
+
+        transform:
+            translateX(-50%);
+    }
+
+
+    /*
+       MUSIC BUTTON
+    */
+
+    #musicButton {
+
+        position: fixed;
+
+        top: 15px;
+        right: 15px;
+
+        width: 40px;
+        height: 40px;
+    }
+
+}
+
+
+/* =====================================================
+   NORMAL MOBILE LANDSCAPE
+===================================================== */
+
+@media screen and (max-width: 768px) and (orientation: landscape) {
+
+    html,
+    body {
+
+        width: 100%;
+        height: 100%;
+
+        overflow: hidden;
+
+        touch-action: none;
+    }
+
+
+    canvas {
+
+        width: 100vw !important;
+        height: 100vh !important;
+
+        left: 0;
+        top: 0;
+    }
+
+
+    #startScreen {
+
+        width: 100vw !important;
+        height: 100vh !important;
+
+        left: 0;
+        top: 0;
+    }
+
+
+    #message {
+
+        width: 100%;
+
+        left: 50%;
+        top: 44%;
+    }
+
+
+    #powerContainer {
+
+        bottom: 18px;
+    }
+
+
+    #instruction {
+
+        bottom: 36px;
+    }
+
+
+    #musicButton {
+
+        top: 12px;
+        right: 12px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     MUSIC
+===================================================== -->
+
+<audio
+    id="bgMusic"
+    src="music.mp3"
+    loop
+    preload="auto">
+</audio>
+
+
+<!-- =====================================================
+     START
+===================================================== -->
+
+<div id="startScreen">
+
+    <h1>FOR YOU</h1>
+
+    <p>CLICK TO BEGIN</p>
+
+</div>
+
+
+<!-- =====================================================
+     GAME
+===================================================== -->
+
+<canvas id="game"></canvas>
+
+
+<!-- =====================================================
+     MESSAGE
+===================================================== -->
+
+<div id="message">
+
+    <div class="message-main">
+        MISS YOU!
+    </div>
+
+    <div class="message-heart">
+        ♥
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     POWER
+===================================================== -->
+
+<div id="powerContainer">
+
+    <div id="powerBar"></div>
+
+</div>
+
+
+<!-- =====================================================
+     INSTRUCTION
+===================================================== -->
+
+<div id="instruction">
+
+    DRAG LEFT TO CHARGE • MOVE UP/DOWN TO AIM • RELEASE
+
+</div>
+
+
+<!-- =====================================================
+     MUSIC BUTTON
+===================================================== -->
+
+<button
+    id="musicButton"
+    type="button">
+
+    ♪
+
+</button>
+
+
+<script>
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const canvas =
+    document.getElementById("game");
+
+const ctx =
+    canvas.getContext("2d");
+
+const startScreen =
+    document.getElementById("startScreen");
+
+const message =
+    document.getElementById("message");
+
+const messageMain =
+    message.querySelector(
+        ".message-main"
+    );
+
+const powerContainer =
+    document.getElementById(
+        "powerContainer"
+    );
+
+const powerBar =
+    document.getElementById(
+        "powerBar"
+    );
+
+const instruction =
+    document.getElementById(
+        "instruction"
+    );
+
+const bgMusic =
+    document.getElementById(
+        "bgMusic"
+    );
+
+const musicButton =
+    document.getElementById(
+        "musicButton"
+    );
+
+
+/* =====================================================
+   SCREEN / GAME SIZE
+===================================================== */
+
+let W = 0;
+let H = 0;
+
+let gameScale = 1;
+
+let mobilePortrait = false;
+
+
+function getScreenMode() {
+
+    mobilePortrait =
+        window.innerWidth <= 768 &&
+        window.innerHeight >
+        window.innerWidth;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE SCALE
+===================================================== */
+
+function updateGameScale() {
+
+    /*
+       Base game resolution:
+       1280 x 720
+    */
+
+    const scaleX =
+        W / 1280;
+
+    const scaleY =
+        H / 720;
+
+
+    gameScale =
+        Math.min(
+            scaleX,
+            scaleY
+        );
+
+
+    /*
+       Desktop:
+       don't become too small
+    */
+
+    if (W > 768) {
+
+        gameScale =
+            Math.max(
+                .75,
+                Math.min(
+                    1.15,
+                    gameScale
+                )
+            );
+
+    }
+
+
+    /*
+       Mobile:
+       smaller objects
+    */
+
+    else {
+
+        gameScale =
+            Math.max(
+                .48,
+                Math.min(
+                    .85,
+                    gameScale
+                )
+            );
+
+    }
+
+}
+
+
+/* =====================================================
+   RESIZE
+===================================================== */
+
+function resize() {
+
+    getScreenMode();
+
+
+    /*
+       If phone is portrait,
+       treat game canvas as landscape.
+    */
+
+    if (mobilePortrait) {
+
+        W =
+            window.innerHeight;
+
+        H =
+            window.innerWidth;
+
+    }
+
+    else {
+
+        W =
+            window.innerWidth;
+
+        H =
+            window.innerHeight;
+
+    }
+
+
+    /*
+       DPR capped at 2
+       for performance
+    */
+
+    const dpr =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
+
+    canvas.width =
+        Math.round(
+            W * dpr
+        );
+
+    canvas.height =
+        Math.round(
+            H * dpr
+        );
+
+
+    canvas.style.width =
+        mobilePortrait
+            ? `${window.innerHeight}px`
+            : `${window.innerWidth}px`;
+
+
+    canvas.style.height =
+        mobilePortrait
+            ? `${window.innerWidth}px`
+            : `${window.innerHeight}px`;
+
+
+    /*
+       Draw using CSS-pixel coordinates
+    */
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+
+    updateGameScale();
+
+    setBowPosition();
+
+    moveTarget(false);
+
+}
+
+
+window.addEventListener(
+    "resize",
+    resize
+);
+
+
+window.addEventListener(
+    "orientationchange",
+    () => {
+
+        setTimeout(
+            resize,
+            100
+        );
+
+    }
+);
+
+
+/* =====================================================
+   BOW
+===================================================== */
+
+const bow = {
+
+    x: 0,
+
+    y: 0,
+
+    angle: 0,
+
+    pull: 0
+
+};
+
+
+function getBowHeight() {
+
+    return 145 * gameScale;
+
+}
+
+
+function getBowCurve() {
+
+    return 48 * gameScale;
+
+}
+
+
+function getPullDistance() {
+
+    return (
+        bow.pull *
+        75 *
+        gameScale
+    );
+
+}
+
+
+function setBowPosition() {
+
+    /*
+       Always left side
+    */
+
+    bow.x =
+        W * .15;
+
+    bow.y =
+        H * .53;
+
+}
+
+
+/* =====================================================
+   TARGET
+===================================================== */
+
+const target = {
+
+    x: 0,
+
+    y: 0
+
+};
+
+
+function getTargetRadius() {
+
+    return (
+        45 *
+        gameScale
+    );
+
+}
+
+
+function moveTarget(randomize = true) {
+
+    /*
+       Keep target far right.
+    */
+
+    const minX =
+        W * .70;
+
+    const maxX =
+        W * .92;
+
+
+    const minY =
+        H * .20;
+
+    const maxY =
+        H * .78;
+
+
+    if (
+        randomize ||
+        target.x === 0
+    ) {
+
+        target.x =
+            minX +
+            Math.random() *
+            (maxX - minX);
+
+
+        target.y =
+            minY +
+            Math.random() *
+            (maxY - minY);
+
+    }
+
+}
+
+
+/* =====================================================
+   GAME STATE
+===================================================== */
+
+let started = false;
+
+let dragging = false;
+
+let shooting = false;
+
+let power = 0;
+
+let arrows = [];
+
+let particles = [];
+
+let hearts = [];
+
+let messageTimer = null;
+
+let activePointerId = null;
+
+let startPointerX = 0;
+
+let startPointerY = 0;
+
+
+/* =====================================================
+   AUDIO
+===================================================== */
+
+let audioCtx = null;
+
+
+function initAudio() {
+
+    if (!audioCtx) {
+
+        audioCtx =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+    }
+
+
+    if (
+        audioCtx.state ===
+        "suspended"
+    ) {
+
+        audioCtx.resume();
+
+    }
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+startScreen.addEventListener(
+    "click",
+    async () => {
+
+        initAudio();
+
+
+        started = true;
+
+
+        startScreen.style.display =
+            "none";
+
+
+        powerContainer.style.opacity =
+            "1";
+
+
+        instruction.style.opacity =
+            "1";
+
+
+        musicButton.style.display =
+            "block";
+
+
+        /*
+           Try real landscape lock
+           when browser allows it.
+        */
+
+        try {
+
+            if (
+                screen.orientation &&
+                screen.orientation.lock
+            ) {
+
+                await screen.orientation.lock(
+                    "landscape"
+                );
+
+            }
+
+        }
+        catch (error) {
+
+            /*
+               CSS fallback is already active.
+            */
+
+            console.log(
+                "Landscape lock unavailable"
+            );
+
+        }
+
+
+        /*
+           Start music
+        */
+
+        try {
+
+            bgMusic.volume =
+                .35;
+
+            await bgMusic.play();
+
+        }
+        catch (error) {
+
+            console.log(
+                "Music error:",
+                error
+            );
+
+        }
+
+
+        resize();
+
+    }
+);
+
+
+/* =====================================================
+   MUSIC
+===================================================== */
+
+musicButton.addEventListener(
+    "click",
+    (e) => {
+
+        e.stopPropagation();
+
+
+        if (
+            bgMusic.paused
+        ) {
+
+            bgMusic.play();
+
+            musicButton.textContent =
+                "♪";
+
+        }
+
+        else {
+
+            bgMusic.pause();
+
+            musicButton.textContent =
+                "×";
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   POINTER COORDINATES
+===================================================== */
+
+/*
+   Pointer client coordinates are viewport
+   coordinates. For the CSS-rotated mobile
+   fallback, convert them to the game's
+   landscape coordinate system.
+*/
+
+function getGamePointer(
+    e
+) {
+
+    const x =
+        e.clientX;
+
+    const y =
+        e.clientY;
+
+
+    if (
+        mobilePortrait
+    ) {
+
+        return {
+
+            x:
+                window.innerHeight -
+                y,
+
+            y:
+                x
+
+        };
+
+    }
+
+
+    return {
+
+        x,
+        y
+
+    };
+
+}
+
+
+/* =====================================================
+   POINTER DOWN
+===================================================== */
+
+canvas.addEventListener(
+    "pointerdown",
+    (e) => {
+
+        if (!started)
+            return;
+
+        if (shooting)
+            return;
+
+
+        if (
+            e.pointerType ===
+            "mouse" &&
+            e.button !== 0
+        )
+            return;
+
+
+        initAudio();
+
+
+        dragging = true;
+
+        activePointerId =
+            e.pointerId;
+
+
+        const p =
+            getGamePointer(e);
+
+
+        startPointerX =
+            p.x;
+
+        startPointerY =
+            p.y;
+
+
+        power = 0;
+
+        bow.pull = 0;
+
+
+        powerBar.style.width =
+            "0%";
+
+
+        try {
+
+            canvas.setPointerCapture(
+                e.pointerId
+            );
+
+        }
+        catch (_) {}
+
+    }
+);
+
+
+/* =====================================================
+   POINTER MOVE
+===================================================== */
+
+canvas.addEventListener(
+    "pointermove",
+    (e) => {
+
+        if (!dragging)
+            return;
+
+        if (
+            e.pointerId !==
+            activePointerId
+        )
+            return;
+
+
+        const p =
+            getGamePointer(e);
+
+
+        const dx =
+            p.x -
+            startPointerX;
+
+
+        const dy =
+            p.y -
+            startPointerY;
+
+
+        /*
+           Aim
+        */
+
+        bow.angle =
+            clamp(
+
+                Math.atan2(
+                    dy,
+                    Math.abs(dx) +
+                    160 * gameScale
+                ),
+
+                -.65,
+
+                .65
+
+            );
+
+
+        /*
+           Drag left = power
+        */
+
+        const leftDrag =
+            Math.max(
+                0,
+                -dx
+            );
+
+
+        power =
+            clamp(
+
+                leftDrag /
+                (
+                    240 *
+                    gameScale
+                ),
+
+                0,
+
+                1
+
+            );
+
+
+        bow.pull =
+            power;
+
+
+        powerBar.style.width =
+            (
+                power *
+                100
+            ) +
+            "%";
+
+    }
+);
+
+
+/* =====================================================
+   POINTER UP
+===================================================== */
+
+function endPointer(
+    e
+) {
+
+    if (!dragging)
+        return;
+
+
+    if (
+        e.pointerId !==
+        activePointerId
+    )
+        return;
+
+
+    dragging = false;
+
+
+    try {
+
+        canvas.releasePointerCapture(
+            e.pointerId
+        );
+
+    }
+    catch (_) {}
+
+
+    activePointerId =
+        null;
+
+
+    if (
+        power >= .05
+    ) {
+
+        shoot();
+
+    }
+
+    else {
+
+        power = 0;
+
+        bow.pull = 0;
+
+        powerBar.style.width =
+            "0%";
+
+    }
+
+}
+
+
+canvas.addEventListener(
+    "pointerup",
+    endPointer
+);
+
+
+canvas.addEventListener(
+    "pointercancel",
+    endPointer
+);
+
+
+/* =====================================================
+   SHOOT
+===================================================== */
+
+function shoot() {
+
+    if (shooting)
+        return;
+
+
+    shooting = true;
+
+
+    const shotPower =
+        power;
+
+
+    const angle =
+        bow.angle;
+
+
+    const speed =
+        (
+            430 +
+            shotPower * 1050
+        ) *
+        Math.max(
+            .75,
+            gameScale
+        );
+
+
+    arrows.push({
+
+        x:
+            bow.x,
+
+        y:
+            bow.y,
+
+        vx:
+            Math.cos(angle) *
+            speed,
+
+        vy:
+            Math.sin(angle) *
+            speed,
+
+        rotation:
+            angle,
+
+        length:
+            82 *
+            gameScale,
+
+        gravity:
+            180 *
+            gameScale,
+
+        alive:
+            true
+
+    });
+
+
+    power = 0;
+
+    bow.pull = 0;
+
+
+    powerBar.style.width =
+        "0%";
+
+
+    playShootSound();
+
+}
+
+
+/* =====================================================
+   SHOOT SOUND
+===================================================== */
+
+function playShootSound() {
+
+    if (!audioCtx)
+        return;
+
+
+    const osc =
+        audioCtx.createOscillator();
+
+    const gain =
+        audioCtx.createGain();
+
+
+    osc.type =
+        "triangle";
+
+
+    osc.frequency.setValueAtTime(
+        180,
+        audioCtx.currentTime
+    );
+
+
+    osc.frequency.exponentialRampToValueAtTime(
+        65,
+        audioCtx.currentTime + .2
+    );
+
+
+    gain.gain.setValueAtTime(
+        .08,
+        audioCtx.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audioCtx.currentTime + .2
+    );
+
+
+    osc.connect(gain);
+
+    gain.connect(
+        audioCtx.destination
+    );
+
+
+    osc.start();
+
+    osc.stop(
+        audioCtx.currentTime +
+        .2
+    );
+
+}
+
+
+/* =====================================================
+   HIT SOUND
+===================================================== */
+
+function playHitSound() {
+
+    if (!audioCtx)
+        return;
+
+
+    const osc =
+        audioCtx.createOscillator();
+
+    const gain =
+        audioCtx.createGain();
+
+
+    osc.type =
+        "sine";
+
+
+    osc.frequency.setValueAtTime(
+        500,
+        audioCtx.currentTime
+    );
+
+
+    osc.frequency.exponentialRampToValueAtTime(
+        950,
+        audioCtx.currentTime + .4
+    );
+
+
+    gain.gain.setValueAtTime(
+        .12,
+        audioCtx.currentTime
+    );
+
+
+    gain.gain.exponentialRampToValueAtTime(
+        .001,
+        audioCtx.currentTime + .5
+    );
+
+
+    osc.connect(gain);
+
+    gain.connect(
+        audioCtx.destination
+    );
+
+
+    osc.start();
+
+    osc.stop(
+        audioCtx.currentTime +
+        .5
+    );
+
+}
+
+
+/* =====================================================
+   UPDATE
+===================================================== */
+
+let lastTime =
+    performance.now();
+
+
+function update(time) {
+
+    const dt =
+        Math.min(
+            (
+                time -
+                lastTime
+            ) / 1000,
+
+            .033
+        );
+
+
+    lastTime =
+        time;
+
+
+    /*
+       ARROWS
+    */
+
+    for (
+        let i =
+            arrows.length - 1;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const arrow =
+            arrows[i];
+
+
+        arrow.x +=
+            arrow.vx *
+            dt;
+
+
+        arrow.y +=
+            arrow.vy *
+            dt;
+
+
+        arrow.vy +=
+            arrow.gravity *
+            dt;
+
+
+        arrow.rotation =
+            Math.atan2(
+                arrow.vy,
+                arrow.vx
+            );
+
+
+        /*
+           Arrow tip
+        */
+
+        const tipX =
+            arrow.x +
+            Math.cos(
+                arrow.rotation
+            ) *
+            arrow.length;
+
+
+        const tipY =
+            arrow.y +
+            Math.sin(
+                arrow.rotation
+            ) *
+            arrow.length;
+
+
+        /*
+           HIT
+        */
+
+        const distance =
+            Math.hypot(
+
+                tipX -
+                target.x,
+
+                tipY -
+                target.y
+
+            );
+
+
+        if (
+            distance <
+            getTargetRadius()
+        ) {
+
+            arrow.alive =
+                false;
+
+
+            hitTarget();
+
+
+            continue;
+
+        }
+
+
+        /*
+           MISS
+        */
+
+        if (
+
+            arrow.x >
+                W + 200 ||
+
+            arrow.x <
+                -200 ||
+
+            arrow.y >
+                H + 200 ||
+
+            arrow.y <
+                -200
+
+        ) {
+
+            arrow.alive =
+                false;
+
+
+            showMessage(
+                "MISS YOU!",
+                "miss",
+                1500
+            );
+
+        }
+
+    }
+
+
+    arrows =
+        arrows.filter(
+            a =>
+                a.alive
+        );
+
+
+    if (
+        shooting &&
+        arrows.length === 0
+    ) {
+
+        shooting = false;
+
+    }
+
+
+    updateParticles();
+
+    updateHearts();
+
+
+    draw();
+
+
+    requestAnimationFrame(
+        update
+    );
+
+}
+
+
+/* =====================================================
+   DRAW
+===================================================== */
+
+function draw() {
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+
+    drawTarget();
+
+    drawBow();
+
+
+    for (
+        const arrow of arrows
+    ) {
+
+        drawArrow(
+            arrow
+        );
+
+    }
+
+
+    drawParticles();
+
+    drawHearts();
+
+}
+
+
+/* =====================================================
+   BOW
+===================================================== */
+
+function drawBow() {
+
+    const h =
+        getBowHeight();
+
+    const curve =
+        getBowCurve();
+
+    const pullDistance =
+        getPullDistance();
+
+
+    ctx.save();
+
+
+    ctx.translate(
+        bow.x,
+        bow.y
+    );
+
+
+    ctx.rotate(
+        bow.angle
+    );
+
+
+    /*
+       Bow
+    */
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        0,
+        -h / 2
+    );
+
+
+    ctx.quadraticCurveTo(
+
+        curve +
+        10 *
+        gameScale,
+
+        0,
+
+        0,
+
+        h / 2
+
+    );
+
+
+    ctx.strokeStyle =
+        "#e5e5e5";
+
+
+    ctx.lineWidth =
+        Math.max(
+            2.5,
+            5 *
+            gameScale
+        );
+
+
+    ctx.lineCap =
+        "round";
+
+
+    ctx.stroke();
+
+
+    /*
+       String
+    */
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        0,
+        -h / 2
+    );
+
+
+    ctx.lineTo(
+        -pullDistance,
+        0
+    );
+
+
+    ctx.lineTo(
+        0,
+        h / 2
+    );
+
+
+    ctx.strokeStyle =
+        "#aaa";
+
+
+    ctx.lineWidth =
+        Math.max(
+            1,
+            2 *
+            gameScale
+        );
+
+
+    ctx.stroke();
+
+
+    /*
+       Aiming arrow
+    */
+
+    if (
+        dragging &&
+        power > .01
+    ) {
+
+        ctx.save();
+
+
+        ctx.translate(
+            -pullDistance,
+            0
+        );
+
+
+        const arrowLength =
+            88 *
+            gameScale;
+
+
+        const arrowHead =
+            13 *
+            gameScale;
+
+
+        const feather =
+            17 *
+            gameScale;
+
+
+        /*
+           Shaft
+        */
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            -8 *
+            gameScale,
+
+            0
+        );
+
+
+        ctx.lineTo(
+            arrowLength,
+            0
+        );
+
+
+        ctx.strokeStyle =
+            "#eee";
+
+
+        ctx.lineWidth =
+            Math.max(
+                1,
+                2 *
+                gameScale
+            );
+
+
+        ctx.stroke();
+
+
+        /*
+           Arrow head
+        */
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            arrowLength,
+            0
+        );
+
+
+        ctx.lineTo(
+
+            arrowLength -
+            arrowHead,
+
+            -6 *
+            gameScale
+
+        );
+
+
+        ctx.moveTo(
+            arrowLength,
+            0
+        );
+
+
+        ctx.lineTo(
+
+            arrowLength -
+            arrowHead,
+
+            6 *
+            gameScale
+
+        );
+
+
+        ctx.strokeStyle =
+            "#fff";
+
+
+        ctx.stroke();
+
+
+        /*
+           Feather
+        */
+
+        ctx.beginPath();
+
+
+        ctx.moveTo(
+            7 *
+            gameScale,
+
+            0
+        );
+
+
+        ctx.lineTo(
+
+            -feather,
+
+            -6 *
+            gameScale
+
+        );
+
+
+        ctx.moveTo(
+            7 *
+            gameScale,
+
+            0
+        );
+
+
+        ctx.lineTo(
+
+            -feather,
+
+            6 *
+            gameScale
+
+        );
+
+
+        ctx.strokeStyle =
+            "#999";
+
+
+        ctx.stroke();
+
+
+        ctx.restore();
+
+    }
+
+
+    ctx.restore();
+
+}
+
+
+/* =====================================================
+   TARGET
+===================================================== */
+
+function drawTarget() {
+
+    const x =
+        target.x;
+
+    const y =
+        target.y;
+
+    const r =
+        getTargetRadius();
+
+
+    /*
+       Outer red
+    */
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x,
+        y,
+        r,
+        0,
+        Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
+        "#e00000";
+
+
+    ctx.fill();
+
+
+    /*
+       White
+    */
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x,
+        y,
+        r * .72,
+        0,
+        Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
+        "#fff";
+
+
+    ctx.fill();
+
+
+    /*
+       Red
+    */
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x,
+        y,
+        r * .49,
+        0,
+        Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
+        "#e00000";
+
+
+    ctx.fill();
+
+
+    /*
+       White
+    */
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x,
+        y,
+        r * .27,
+        0,
+        Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
+        "#fff";
+
+
+    ctx.fill();
+
+
+    /*
+       Bullseye
+    */
+
+    ctx.beginPath();
+
+
+    ctx.arc(
+        x,
+        y,
+        r * .14,
+        0,
+        Math.PI * 2
+    );
+
+
+    ctx.fillStyle =
+        "#e00000";
+
+
+    ctx.fill();
+
+}
+
+
+/* =====================================================
+   ARROW
+===================================================== */
+
+function drawArrow(
+    arrow
+) {
+
+    ctx.save();
+
+
+    ctx.translate(
+        arrow.x,
+        arrow.y
+    );
+
+
+    ctx.rotate(
+        arrow.rotation
+    );
+
+
+    const head =
+        13 *
+        gameScale;
+
+
+    const feather =
+        7 *
+        gameScale;
+
+
+    /*
+       Shaft
+    */
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        0,
+        0
+    );
+
+
+    ctx.lineTo(
+        arrow.length,
+        0
+    );
+
+
+    ctx.strokeStyle =
+        "#eee";
+
+
+    ctx.lineWidth =
+        Math.max(
+            1,
+            2 *
+            gameScale
+        );
+
+
+    ctx.stroke();
+
+
+    /*
+       Head
+    */
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        arrow.length,
+        0
+    );
+
+
+    ctx.lineTo(
+
+        arrow.length -
+        head,
+
+        -6 *
+        gameScale
+
+    );
+
+
+    ctx.moveTo(
+        arrow.length,
+        0
+    );
+
+
+    ctx.lineTo(
+
+        arrow.length -
+        head,
+
+        6 *
+        gameScale
+
+    );
+
+
+    ctx.strokeStyle =
+        "#fff";
+
+
+    ctx.stroke();
+
+
+    /*
+       Feather
+    */
+
+    ctx.beginPath();
+
+
+    ctx.moveTo(
+        7 *
+        gameScale,
+
+        0
+    );
+
+
+    ctx.lineTo(
+        -feather,
+        -6 *
+        gameScale
+    );
+
+
+    ctx.moveTo(
+        7 *
+        gameScale,
+
+        0
+    );
+
+
+    ctx.lineTo(
+        -feather,
+        6 *
+        gameScale
+    );
+
+
+    ctx.strokeStyle =
+        "#999";
+
+
+    ctx.stroke();
+
+
+    ctx.restore();
+
+}
+
+
+/* =====================================================
+   HIT
+===================================================== */
+
+function hitTarget() {
+
+    playHitSound();
+
+
+    /*
+       Particles
+    */
+
+    for (
+        let i = 0;
+        i < 35;
+        i++
+    ) {
+
+        const angle =
+            Math.random() *
+            Math.PI *
+            2;
+
+
+        const speed =
+            60 +
+            Math.random() *
+            250;
+
+
+        particles.push({
+
+            x:
+                target.x,
+
+            y:
+                target.y,
+
+            vx:
+                Math.cos(angle) *
+                speed,
+
+            vy:
+                Math.sin(angle) *
+                speed,
+
+            life:
+                .5 +
+                Math.random() *
+                .6,
+
+            size:
+                1 +
+                Math.random() *
+                3
+
+        });
+
+    }
+
+
+    /*
+       Hearts
+    */
+
+    for (
+        let i = 0;
+        i < 12;
+        i++
+    ) {
+
+        hearts.push({
+
+            x:
+                target.x,
+
+            y:
+                target.y,
+
+            vx:
+                (
+                    Math.random() -
+                    .5
+                ) *
+                100,
+
+            vy:
+                -40 -
+                Math.random() *
+                100,
+
+            life:
+                1.5,
+
+            size:
+                8 +
+                Math.random() *
+                8
+
+        });
+
+    }
+
+
+    /*
+       LOVE YOU
+    */
+
+    showMessage(
+        "LOVE YOU",
+        "love",
+        2000
+    );
+
+
+    /*
+       Move target
+    */
+
+    setTimeout(
+        () => {
+
+            moveTarget(true);
+
+        },
+        500
+    );
+
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function showMessage(
+    text,
+    type,
+    duration
+) {
+
+    clearTimeout(
+        messageTimer
+    );
+
+
+    messageMain.textContent =
+        text;
+
+
+    message.classList.remove(
+        "show",
+        "miss",
+        "love"
+    );
+
+
+    message.classList.add(
+        type
+    );
+
+
+    void message.offsetWidth;
+
+
+    setTimeout(
+        () => {
+
+            message.classList.add(
+                "show"
+            );
+
+        },
+        30
+    );
+
+
+    messageTimer =
+        setTimeout(
+            () => {
+
+                message.classList.remove(
+                    "show"
+                );
+
+            },
+            duration
+        );
+
+}
+
+
+/* =====================================================
+   PARTICLES
+===================================================== */
+
+function updateParticles() {
+
+    for (
+        let i =
+            particles.length - 1;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const p =
+            particles[i];
+
+
+        p.x +=
+            p.vx *
+            .016;
+
+
+        p.y +=
+            p.vy *
+            .016;
+
+
+        p.vy +=
+            120 *
+            .016;
+
+
+        p.life -=
+            .016;
+
+
+        if (
+            p.life <= 0
+        ) {
+
+            particles.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+}
+
+
+function drawParticles() {
+
+    for (
+        const p of particles
+    ) {
+
+        ctx.globalAlpha =
+            Math.max(
+                0,
+                p.life
+            );
+
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size *
+            gameScale,
+            0,
+            Math.PI * 2
+        );
+
+
+        ctx.fillStyle =
+            "#fff";
+
+
+        ctx.fill();
+
+    }
+
+
+    ctx.globalAlpha =
+        1;
+
+}
+
+
+/* =====================================================
+   HEARTS
+===================================================== */
+
+function updateHearts() {
+
+    for (
+        let i =
+            hearts.length - 1;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const heart =
+            hearts[i];
+
+
+        heart.x +=
+            heart.vx *
+            .016;
+
+
+        heart.y +=
+            heart.vy *
+            .016;
+
+
+        heart.vy +=
+            35 *
+            .016;
+
+
+        heart.life -=
+            .016;
+
+
+        if (
+            heart.life <= 0
+        ) {
+
+            hearts.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+}
+
+
+function drawHearts() {
+
+    for (
+        const heart of hearts
+    ) {
+
+        ctx.globalAlpha =
+            Math.max(
+                0,
+                heart.life
+            );
+
+
+        ctx.font =
+            `${
+                heart.size *
+                gameScale
+            }px Arial`;
+
+
+        ctx.fillStyle =
+            "#ff4b18";
+
+
+        ctx.textAlign =
+            "center";
+
+
+        ctx.fillText(
+            "♥",
+
+            heart.x,
+
+            heart.y
+
+        );
+
+    }
+
+
+    ctx.globalAlpha =
+        1;
+
+}
+
+
+/* =====================================================
+   CLAMP
+===================================================== */
+
+function clamp(
+    value,
+    min,
+    max
+) {
+
+    return Math.max(
+        min,
+        Math.min(
+            max,
+            value
+        )
+    );
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+resize();
+
+requestAnimationFrame(
+    update
+);
+
+</script>
+
+</body>
+
+</html>
