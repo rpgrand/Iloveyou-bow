@@ -2,603 +2,110 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
->
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
 <title>FOR YOU</title>
-
 <style>
-
-*{
-  box-sizing:border-box;
-  user-select:none;
-  -webkit-user-select:none;
-  -webkit-tap-highlight-color:transparent
-}
-
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  overscroll-behavior:none;
-  background:#000;
-  font-family:Arial,sans-serif;
-  touch-action:none
-}
-
-body{
-  position:fixed;
-  inset:0
-}
+*{box-sizing:border-box;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#000;font-family:Arial,sans-serif;touch-action:none}
+body{position:fixed;inset:0}
 
 /* ================= STAGE ================= */
-
-#stage{
-  position:fixed;
-  left:0;
-  top:0;
-  width:100vw;
-  height:100vh;
-  height:100dvh;
-  overflow:hidden;
-  background:#000;
-  transform-origin:0 0;
-  touch-action:none;
-  will-change:transform,width,height
-}
-
-canvas{
-  display:block;
-  position:absolute;
-  left:0;
-  top:0;
-  width:100%;
-  height:100%;
-  background:#000;
-  cursor:crosshair;
-  touch-action:none
-}
-
+#stage{position:fixed;left:0;top:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background:#000;transform-origin:0 0;touch-action:none;will-change:transform}
+canvas{display:block;position:absolute;left:0;top:0;width:100%;height:100%;background:#000;cursor:crosshair;touch-action:none}
 
 /* ================= START ================= */
-
-#startScreen{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  background:#000;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  z-index:20;
-  cursor:pointer
-}
-
-#startScreen h1{
-  margin:0 0 16px;
-  color:#fff;
-  font-size:clamp(28px,5vw,48px);
-  font-weight:300;
-  letter-spacing:8px;
-  animation:breathe 2s infinite ease-in-out
-}
-
-#startScreen p{
-  margin:0;
-  color:#666;
-  font-size:11px;
-  letter-spacing:4px
-}
-
-#startScreen p#rotateHint{
-  display:block;
-  margin-top:14px;
-  color:#888
-}
-
-@keyframes breathe{
-  0%,100%{
-    opacity:.4;
-    transform:scale(1)
-  }
-
-  50%{
-    opacity:1;
-    transform:scale(1.04)
-  }
-}
-
+#startScreen{position:absolute;inset:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;cursor:pointer}
+#startScreen h1{margin:0 0 16px;color:#fff;font-size:clamp(28px,5vw,48px);font-weight:300;letter-spacing:8px;animation:breathe 2s infinite ease-in-out}
+#startScreen p{margin:0;color:#666;font-size:11px;letter-spacing:4px}
+#startScreen p#rotateHint{display:block;margin-top:14px;color:#888}
+@keyframes breathe{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.04)}}
 
 /* ================= MESSAGE ================= */
-
-/* ================= MESSAGE ================= */
-
-#message{
-  position:absolute;
-  top:50%;
-  left:50%;
-
-  /*
-     Important:
-     fixed visual center ng game canvas
-  */
-  width:max-content;
-  max-width:90%;
-
-  transform:translate(-50%,-50%) scale(.6) rotate(-2deg);
-
-  pointer-events:none;
-  opacity:0;
-  z-index:15;
-
-  white-space:nowrap;
-  text-align:center;
-
-  will-change:transform,opacity;
-
-  transition:
-    opacity .35s ease,
-    transform .65s cubic-bezier(.2,.9,.2,1);
-}
-
-#message.show{
-  opacity:1;
-  transform:
-    translate(-50%,-50%)
-    scale(1)
-    rotate(-2deg);
-}
-
-.message-main{
-  font-family:Impact,"Arial Black",Arial,sans-serif;
-  font-size:clamp(38px,7vw,88px);
-  font-weight:900;
-  letter-spacing:2px;
-  line-height:.9;
-  text-transform:uppercase;
-
-  text-align:center;
-
-  -webkit-text-stroke:1px rgba(0,0,0,.15);
-}
-
-#message.miss .message-main{
-  color:#bcbcbc;
-
-  text-shadow:
-    3px 3px 0 #777,
-    6px 6px 0 rgba(0,0,0,.45);
-}
-
-#message.love .message-main{
-  color:#ff4b18;
-
-  text-shadow:
-    3px 3px 0 #8d250b,
-    6px 6px 0 rgba(0,0,0,.45);
-}
-
-.message-heart{
-  margin-top:14px;
-
-  font-size:22px;
-  color:#ff4b18;
-
-  text-align:center; 
-
-  animation:heartPulse 1s infinite ease-in-out;
-}
-
-@keyframes heartPulse{
-  0%,100%{
-    transform:scale(1);
-  }
-
-  50%{
-    transform:scale(1.25);
-  }
-}
-
+#message{position:absolute;top:50%;left:50%;width:max-content;max-width:90%;transform:translate(-50%,-50%) scale(.6) rotate(-2deg);pointer-events:none;opacity:0;z-index:15;white-space:nowrap;text-align:center;will-change:transform,opacity;transition:opacity .35s ease,transform .65s cubic-bezier(.2,.9,.2,1)}
+#message.show{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-2deg)}
+.message-main{font-family:Impact,"Arial Black",Arial,sans-serif;font-size:clamp(38px,7vw,88px);font-weight:900;letter-spacing:2px;line-height:.9;text-transform:uppercase;text-align:center;-webkit-text-stroke:1px rgba(0,0,0,.15)}
+#message.miss .message-main{color:#bcbcbc;text-shadow:3px 3px 0 #777,6px 6px 0 rgba(0,0,0,.45)}
+#message.love .message-main{color:#ff4b18;text-shadow:3px 3px 0 #8d250b,6px 6px 0 rgba(0,0,0,.45)}
+.message-heart{margin-top:14px;font-size:22px;color:#ff4b18;text-align:center;animation:heartPulse 1s infinite ease-in-out}
+@keyframes heartPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 
 /* ================= POWER ================= */
-
-#powerContainer{
-  position:absolute;
-  left:50%;
-  bottom:28px;
-  transform:translateX(-50%);
-  width:min(260px,45vw);
-  height:5px;
-  background:#222;
-  border-radius:10px;
-  overflow:hidden;
-  opacity:0;
-  z-index:10
-}
-
-#powerBar{
-  width:0%;
-  height:100%;
-  background:#fff;
-  box-shadow:0 0 12px #fff
-}
-
-#instruction{
-  position:absolute;
-  left:50%;
-  bottom:47px;
-  transform:translateX(-50%);
-  width:100%;
-  color:#555;
-  font-size:10px;
-  letter-spacing:2px;
-  text-align:center;
-  opacity:0;
-  pointer-events:none;
-  white-space:nowrap;
-  z-index:10
-}
-
+#powerContainer{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);width:min(260px,45vw);height:5px;background:#222;border-radius:10px;overflow:hidden;opacity:0;z-index:10}
+#powerBar{width:0%;height:100%;background:#fff;box-shadow:0 0 12px #fff}
+#instruction{position:absolute;left:50%;bottom:47px;transform:translateX(-50%);width:100%;color:#555;font-size:10px;letter-spacing:2px;text-align:center;opacity:0;pointer-events:none;white-space:nowrap;z-index:10}
 
 /* ================= BUTTONS ================= */
-
-#musicButton,
-#flipButton{
-  position:absolute;
-  top:18px;
-  width:42px;
-  height:42px;
-  border:1px solid #333;
-  border-radius:50%;
-  background:rgba(0,0,0,.75);
-  color:#aaa;
-  cursor:pointer;
-  z-index:30;
-  display:none;
-  touch-action:manipulation
-}
-
-#musicButton{
-  right:18px;
-  font-size:17px
-}
-
-#flipButton{
-  right:70px;
-  font-size:20px
-}
-
-#musicButton:hover,
-#flipButton:hover{
-  color:#fff;
-  border-color:#fff
-}
-
+#musicButton,#flipButton{position:absolute;top:18px;width:42px;height:42px;border:1px solid #333;border-radius:50%;background:rgba(0,0,0,.75);color:#aaa;cursor:pointer;z-index:30;display:none;touch-action:manipulation}
+#musicButton{right:18px;font-size:17px}
+#flipButton{right:70px;font-size:20px}
+#musicButton:hover,#flipButton:hover{color:#fff;border-color:#fff}
 
 /* ================= COMBO + LIVES ================= */
+#comboHud{position:absolute;top:22px;left:24px;z-index:12;pointer-events:none;color:#fff;font-family:Impact,"Arial Black",Arial,sans-serif;letter-spacing:2px;text-align:left;text-shadow:2px 2px 0 rgba(0,0,0,.7);opacity:0;will-change:opacity;transition:opacity .25s ease}
+#comboHud.active{opacity:1}
+#comboCount{font-size:20px;line-height:1}
+#highestHit{margin-top:5px;color:#aaa;font-family:Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:2px}
+#lives{margin-top:7px;color:#ff4b18;font-family:Arial,sans-serif;font-size:16px;letter-spacing:3px;text-shadow:0 0 8px rgba(255,75,24,.35);white-space:nowrap}
+#comboCount.hot{animation:comboPulse .35s ease-out}
+@keyframes comboPulse{0%{transform:scale(1)}45%{transform:scale(1.25)}100%{transform:scale(1)}}
 
-#comboHud{
-  position:absolute;
-  top:22px;
-  left:24px;
-  z-index:12;
-  pointer-events:none;
-  color:#fff;
-  font-family:Impact,"Arial Black",Arial,sans-serif;
-  letter-spacing:2px;
-  text-align:left;
-  text-shadow:2px 2px 0 rgba(0,0,0,.7);
-  opacity:0;
-  will-change:opacity;
-  transition:opacity .25s ease
-}
-
-#comboHud.active{
-  opacity:1
-}
-
-#comboCount{
-  font-size:28px;
-  line-height:1
-}
-
-#highestHit{
-  margin-top:5px;
-  color:#aaa;
-  font-family:Arial,sans-serif;
-  font-size:10px;
-  font-weight:700;
-  letter-spacing:2px
-}
-
-#lives{
-  margin-top:7px;
-  color:#ff4b18;
-  font-family:Arial,sans-serif;
-  font-size:16px;
-  letter-spacing:3px;
-  text-shadow:0 0 8px rgba(255,75,24,.35);
-  white-space:nowrap
-}
-
-#comboCount.hot{
-  animation:comboPulse .35s ease-out
-}
-
-@keyframes comboPulse{
-  0%{
-    transform:scale(1)
-  }
-
-  45%{
-    transform:scale(1.25)
-  }
-
-  100%{
-    transform:scale(1)
-  }
-}
-
-
-/* =====================================================
-   MOBILE HUD
-===================================================== */
-
+/* ================= MOBILE HUD ================= */
 @media screen and (max-width:768px){
+  #startScreen h1{font-size:clamp(26px,8vw,36px);letter-spacing:5px}
+  #startScreen p{font-size:9px;letter-spacing:3px}
+  .message-main{font-size:clamp(34px,10vw,64px);letter-spacing:1px}
+  .message-heart{font-size:18px;margin-top:10px}
 
-  #startScreen h1{
-    font-size:clamp(26px,8vw,36px);
-    letter-spacing:5px
-  }
+  /* NOTE: inalis ang backdrop-filter blur (mabigat sa mobile GPU dahil
+     nagre-redraw ang canvas every frame). Halos pareho pa rin ang itsura. */
+  #comboHud{top:10px;left:10px;padding:7px 9px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:rgba(0,0,0,.28);letter-spacing:1px}
+  #comboCount{font-size:15px}
+  #highestHit{font-size:7px;margin-top:3px;letter-spacing:1px}
+  #lives{margin-top:4px;font-size:13px;letter-spacing:2px}
 
-  #startScreen p{
-    font-size:9px;
-    letter-spacing:3px
-  }
+  #musicButton,#flipButton{width:36px;height:36px;top:9px}
+  #musicButton{right:9px;font-size:15px}
+  #flipButton{right:52px;font-size:18px}
 
-  .message-main{
-    font-size:clamp(34px,10vw,64px);
-    letter-spacing:1px
-  }
+  #powerContainer{width:170px;height:4px;bottom:19px}
+  #instruction{bottom:36px;font-size:7px;letter-spacing:1px;padding:0 8px}
 
-  .message-heart{
-    font-size:18px;
-    margin-top:10px
-  }
-
-
-  /*
-     MOBILE HUD
-     Naka-box nang kaunti para hindi
-     magulo kapag maliit ang screen.
-  */
-
-  #comboHud{
-    top:10px;
-    left:10px;
-    padding:7px 9px;
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:8px;
-    background:rgba(0,0,0,.28);
-    backdrop-filter:blur(3px);
-    -webkit-backdrop-filter:blur(3px);
-    letter-spacing:1px
-  }
-
-  #comboCount{
-    font-size:20px
-  }
-
-  #highestHit{
-    font-size:7px;
-    margin-top:3px;
-    letter-spacing:1px
-  }
-
-  #lives{
-    margin-top:4px;
-    font-size:13px;
-    letter-spacing:2px
-  }
-
-
-  /*
-     Buttons sa upper-right.
-  */
-
-  #musicButton,
-  #flipButton{
-    width:36px;
-    height:36px;
-    top:9px
-  }
-
-  #musicButton{
-    right:9px;
-    font-size:15px
-  }
-
-  #flipButton{
-    right:52px;
-    font-size:18px
-  }
-
-
-  /*
-     Bottom controls
-  */
-
-  #powerContainer{
-    width:170px;
-    height:4px;
-    bottom:19px
-  }
-
-  #instruction{
-    bottom:36px;
-    font-size:7px;
-    letter-spacing:1px;
-    padding:0 8px
-  }
-
-
-  /*
-     Message sa mobile
-  */
-
-  #message{
-    top:47%
-  }
-
-  .message-main{
-    font-size:clamp(30px,9vw,56px);
-    max-width:95vw;
-    overflow:hidden;
-    text-overflow:ellipsis
-  }
-
-  .message-heart{
-    font-size:16px;
-    margin-top:8px
-  }
-
+  #message{top:47%}
+  .message-main{font-size:clamp(30px,9vw,56px);max-width:95vw;overflow:hidden;text-overflow:ellipsis}
+  .message-heart{font-size:16px;margin-top:8px}
 }
-
-
-/* ================= VERY SMALL PHONES ================= */
 
 @media screen and (max-width:400px){
-
-  #startScreen h1{
-    font-size:25px;
-    letter-spacing:4px
-  }
-
-  .message-main{
-    font-size:36px
-  }
-
-  #comboHud{
-    top:8px;
-    left:8px;
-    padding:6px 8px
-  }
-
-  #comboCount{
-    font-size:18px
-  }
-
-  #highestHit{
-    font-size:6px
-  }
-
-  #lives{
-    font-size:11px;
-    letter-spacing:1px
-  }
-
-  #powerContainer{
-    width:145px
-  }
-
-  #instruction{
-    font-size:6px;
-    bottom:34px
-  }
-
+  #startScreen h1{font-size:25px;letter-spacing:4px}
+  .message-main{font-size:36px}
+  #comboHud{top:8px;left:8px;padding:6px 8px}
+  #comboCount{font-size:18px}
+  #highestHit{font-size:6px}
+  #lives{font-size:11px;letter-spacing:1px}
+  #powerContainer{width:145px}
+  #instruction{font-size:6px;bottom:34px}
 }
 
-
-/* =====================================================
-   MOBILE LANDSCAPE SAFE HUD
-===================================================== */
-
+/* ================= MOBILE LANDSCAPE SAFE HUD ================= */
 @media screen and (orientation:landscape) and (max-height:500px){
-
-  #comboHud{
-    top:7px;
-    left:8px;
-    padding:5px 7px
-  }
-
-  #comboCount{
-    font-size:18px
-  }
-
-  #highestHit{
-    margin-top:2px;
-    font-size:6px
-  }
-
-  #lives{
-    margin-top:3px;
-    font-size:11px
-  }
-
-  #musicButton,
-  #flipButton{
-    top:7px;
-    width:34px;
-    height:34px
-  }
-
-  #musicButton{
-    right:7px
-  }
-
-  #flipButton{
-    right:47px
-  }
-
-  #powerContainer{
-    bottom:12px
-  }
-
-  #instruction{
-    bottom:28px
-  }
-
-  #message{
-    top:45%
-  }
-
+  #comboHud{top:7px;left:8px;padding:5px 7px}
+  #comboCount{font-size:18px}
+  #highestHit{margin-top:2px;font-size:6px}
+  #lives{margin-top:3px;font-size:11px}
+  #musicButton,#flipButton{top:7px;width:34px;height:34px}
+  #musicButton{right:7px}
+  #flipButton{right:47px}
+  #powerContainer{bottom:12px}
+  #instruction{bottom:28px}
+  #message{top:45%}
 }
 
-
-/* =====================================================
-   HP PICKUP TIMER INDICATOR
-===================================================== */
-
-#heartTimer{
-  position:absolute;
-  z-index:13;
-  pointer-events:none;
-  display:none;
-  transform:translate(-50%,-50%);
-  width:42px;
-  height:4px;
-  border-radius:10px;
-  background:rgba(255,255,255,.15);
-  overflow:hidden
-}
-
-#heartTimerBar{
-  width:100%;
-  height:100%;
-  background:#ff304f;
-  box-shadow:0 0 8px #ff304f
-}
-
+/* ================= HP PICKUP TIMER ================= */
+#heartTimer{position:absolute;z-index:13;pointer-events:none;display:none;transform:translate(-50%,-50%);width:42px;height:4px;border-radius:10px;background:rgba(255,255,255,.15);overflow:hidden}
+#heartTimerBar{width:100%;height:100%;background:#ff304f;box-shadow:0 0 8px #ff304f}
 </style>
 </head>
 
@@ -608,628 +115,291 @@ canvas{
 
   <audio id="bgMusic" src="music.mp3" loop preload="auto"></audio>
 
-
   <div id="startScreen">
-
     <h1>FOR YOU</h1>
-
     <p>CLICK TO BEGIN</p>
-
     <br>
-
     <p>Made by Neil</p>
-
     <p id="rotateHint">↻ LANDSCAPE MODE</p>
-
   </div>
-
-
-  <!-- ================= HUD ================= -->
 
   <div id="comboHud">
-
-    <div id="comboCount">
-      COMBO 0
-    </div>
-
-    <div id="highestHit">
-      HIGHEST HIT 0
-    </div>
-
-    <div id="lives">
-      ♥ ♥ ♥
-    </div>
-
+    <div id="comboCount">COMBO 0</div>
+    <div id="highestHit">HIGHEST HIT 0</div>
+    <div id="lives">♥ ♥ ♥</div>
   </div>
-
 
   <canvas id="game"></canvas>
 
-
-  <!-- MESSAGE -->
-
   <div id="message">
-
-    <div class="message-main">
-      MISS YOU!
-    </div>
-
-    <div class="message-heart">
-      ♥
-    </div>
-
+    <div class="message-main">MISS YOU!</div>
+    <div class="message-heart">♥</div>
   </div>
 
+  <div id="powerContainer"><div id="powerBar"></div></div>
 
-  <!-- POWER -->
+  <div id="instruction">DRAG LEFT TO CHARGE • MOVE UP/DOWN TO AIM • RELEASE</div>
 
-  <div id="powerContainer">
+  <button id="musicButton" type="button">♪</button>
+  <button id="flipButton" type="button" aria-label="Flip screen">⟲</button>
 
-    <div id="powerBar"></div>
-
-  </div>
-
-
-  <div id="instruction">
-    DRAG LEFT TO CHARGE • MOVE UP/DOWN TO AIM • RELEASE
-  </div>
-
-
-  <!-- BUTTONS -->
-
-  <button
-    id="musicButton"
-    type="button"
-  >
-    ♪
-  </button>
-
-
-  <button
-    id="flipButton"
-    type="button"
-    aria-label="Flip screen"
-  >
-    ⟲
-  </button>
-
-
-  <!-- HEART TIMER -->
-
-  <div id="heartTimer">
-
-    <div id="heartTimerBar"></div>
-
-  </div>
+  <div id="heartTimer"><div id="heartTimerBar"></div></div>
 
 </div>
-
 
 <script>
 
 /* =====================================================
    ELEMENTS
 ===================================================== */
-
 const $=id=>document.getElementById(id);
 
 const canvas=$("game");
-
-const ctx=
-  canvas.getContext("2d",{
-    alpha:false,
-    desynchronized:true
-  });
+const ctx=canvas.getContext("2d",{alpha:false,desynchronized:true});
 
 const startScreen=$("startScreen");
-
 const message=$("message");
-const messageMain=
-  message.querySelector(".message-main");
-
-const powerContainer=
-  $("powerContainer");
-
-const powerBar=
-  $("powerBar");
-
-const instruction=
-  $("instruction");
-
-const bgMusic=
-  $("bgMusic");
-
-const musicButton=
-  $("musicButton");
-
-const flipButton=
-  $("flipButton");
-
-const comboHud=
-  $("comboHud");
-
-const comboCount=
-  $("comboCount");
-
-const highestHit=
-  $("highestHit");
-
-const livesEl=
-  $("lives");
-
-const stage=
-  $("stage");
-
-const heartTimer=
-  $("heartTimer");
-
-const heartTimerBar=
-  $("heartTimerBar");
+const messageMain=message.querySelector(".message-main");
+const powerContainer=$("powerContainer");
+const powerBar=$("powerBar");
+const instruction=$("instruction");
+const bgMusic=$("bgMusic");
+const musicButton=$("musicButton");
+const flipButton=$("flipButton");
+const comboHud=$("comboHud");
+const comboCount=$("comboCount");
+const highestHit=$("highestHit");
+const livesEl=$("lives");
+const stage=$("stage");
+const heartTimer=$("heartTimer");
+const heartTimerBar=$("heartTimerBar");
 
 
 /* =====================================================
    SCREEN / ORIENTATION
 ===================================================== */
-
 let W=0;
 let H=0;
-
 let gameScale=1;
-
 let mobilePortrait=false;
-
 let dprCap=2;
-
+let curDpr=1;
 let rotCCW=false;
-
 let manualFlip=false;
-
 
 const isMobileDevice=(
   (navigator.maxTouchPoints||0)>0 ||
   window.matchMedia("(pointer:coarse)").matches ||
   "ontouchstart" in window ||
-  /Android|iPhone|iPad|iPod|Mobile/i.test(
-    navigator.userAgent
-  )
+  /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
 );
 
-
 function shouldRotate(vw,vh){
-
-  return vh>vw &&
-    (isMobileDevice || vw<=820);
-
+  return vh>vw && (isMobileDevice || vw<=820);
 }
 
-
 function getViewportSize(){
-
-  let vw=
-    window.innerWidth ||
-    document.documentElement.clientWidth;
-
-  let vh=
-    window.innerHeight ||
-    document.documentElement.clientHeight;
-
+  let vw=window.innerWidth||document.documentElement.clientWidth;
+  let vh=window.innerHeight||document.documentElement.clientHeight;
 
   if(window.visualViewport){
-
-    const vv=
-      window.visualViewport;
-
-    if(vv.width>0)
-      vw=vv.width;
-
-    if(vv.height>0)
-      vh=vv.height;
-
+    const vv=window.visualViewport;
+    if(vv.width>0)vw=vv.width;
+    if(vv.height>0)vh=vv.height;
   }
 
-
   return{
-
-    width:
-      Math.max(
-        1,
-        Math.round(vw)
-      ),
-
-    height:
-      Math.max(
-        1,
-        Math.round(vh)
-      )
-
+    width:Math.max(1,Math.round(vw)),
+    height:Math.max(1,Math.round(vh))
   };
-
 }
 
 
 /* =====================================================
    LANDSCAPE
+   (may guard na: hindi na nagsusulat sa DOM kung walang
+   pagbabago, para iwas style recalc every refresh)
 ===================================================== */
+let stageSig="";
+let flipSig="";
 
 function applyLandscapeView(){
 
-  const{
-    width:vw,
-    height:vh
-  }=
-    getViewportSize();
+  const{width:vw,height:vh}=getViewportSize();
 
+  let w,h,tf;
 
-  if(
-    shouldRotate(vw,vh)
-  ){
-
+  if(shouldRotate(vw,vh)){
     mobilePortrait=true;
-
-    stage.style.width=
-      vh+"px";
-
-    stage.style.height=
-      vw+"px";
-
-    stage.style.transformOrigin=
-      "0 0";
-
-
-    if(rotCCW){
-
-      stage.style.transform=
-        `translateX(${vw}px) rotate(90deg)`;
-
-    }else{
-
-      stage.style.transform=
-        `translateY(${vh}px) rotate(-90deg)`;
-
-    }
-
+    w=vh;
+    h=vw;
+    tf=rotCCW
+      ?`translateX(${vw}px) rotate(90deg)`
+      :`translateY(${vh}px) rotate(-90deg)`;
   }else{
-
     mobilePortrait=false;
-
-    stage.style.width=
-      vw+"px";
-
-    stage.style.height=
-      vh+"px";
-
-    stage.style.transformOrigin=
-      "0 0";
-
-    stage.style.transform=
-      "none";
-
+    w=vw;
+    h=vh;
+    tf="none";
   }
 
+  stage.style.width=w+"px";
+  stage.style.height=h+"px";
+  stage.style.transformOrigin="0 0";
+  stage.style.transform=tf;
 
-  flipButton.style.display=
-    (
-      started &&
-      isMobileDevice &&
-      mobilePortrait
-    )
-      ?"block"
-      :"none";
+  const flipShow=(started&&isMobileDevice&&mobilePortrait)?"block":"none";
 
+  if(flipShow!==flipSig){
+    flipSig=flipShow;
+    flipButton.style.display=flipShow;
+  }
 }
 
 
 /* =====================================================
    SCALE
 ===================================================== */
-
 function updateGameScale(){
 
-  gameScale=
-    Math.min(
-      W/1280,
-      H/720
-    );
+  gameScale=Math.min(W/1280,H/720);
 
-
-  gameScale=
-    W>768
-
-      ?Math.max(
-        .75,
-        Math.min(
-          1.15,
-          gameScale
-        )
-      )
-
-      :Math.max(
-        .48,
-        Math.min(
-          .85,
-          gameScale
-        )
-      );
+  gameScale=W>768
+    ?Math.max(.75,Math.min(1.15,gameScale))
+    :Math.max(.48,Math.min(.85,gameScale));
 
 }
 
 
 /* =====================================================
    RESIZE
+   - hindi na nire-realloc ang canvas kung pareho ang size
+   - naka-coalesce (1 resize per frame lang)
 ===================================================== */
-
 function resize(){
 
   applyLandscapeView();
 
-  const vp=
-    getViewportSize();
+  const vp=getViewportSize();
 
+  W=Math.max(1,Math.round(mobilePortrait?vp.height:vp.width));
+  H=Math.max(1,Math.round(mobilePortrait?vp.width:vp.height));
 
-  W=
-    Math.max(
-      1,
-      Math.round(
-        mobilePortrait
-          ?vp.height
-          :vp.width
-      )
-    );
+  curDpr=Math.min(window.devicePixelRatio||1,dprCap);
 
+  const cw=Math.round(W*curDpr);
+  const ch=Math.round(H*curDpr);
 
-  H=
-    Math.max(
-      1,
-      Math.round(
-        mobilePortrait
-          ?vp.width
-          :vp.height
-      )
-    );
+  if(canvas.width!==cw||canvas.height!==ch){
+    canvas.width=cw;
+    canvas.height=ch;
+  }
 
+  const sw=W+"px";
+  const sh=H+"px";
 
-  const dpr=
-    Math.min(
-      window.devicePixelRatio||1,
-      dprCap
-    );
+  if(canvas.style.width!==sw)canvas.style.width=sw;
+  if(canvas.style.height!==sh)canvas.style.height=sh;
 
-
-  canvas.width=
-    Math.round(W*dpr);
-
-  canvas.height=
-    Math.round(H*dpr);
-
-
-  canvas.style.width=
-    W+"px";
-
-  canvas.style.height=
-    H+"px";
-
-
-  ctx.setTransform(
-    dpr,
-    0,
-    0,
-    dpr,
-    0,
-    0
-  );
-
+  ctx.setTransform(curDpr,0,0,curDpr,0,0);
 
   updateGameScale();
-
   setBowPosition();
-
   moveTarget(false);
 
+  if(healthHeart){
+    healthHeart.x=healthHeart.nx*W;
+    healthHeart.y=healthHeart.ny*H;
+    healthHeart.radius=27*gameScale;
+    updateHeartTimerPosition();
+  }
+
 }
 
+let resizeQueued=false;
 
-/* =====================================================
-   REFRESH
-===================================================== */
+function scheduleResize(){
+  if(resizeQueued)return;
+  resizeQueued=true;
+  requestAnimationFrame(()=>{
+    resizeQueued=false;
+    resize();
+  });
+}
 
 function refresh(){
-
-  applyLandscapeView();
-
   resize();
-
 }
-
 
 function multiRefresh(delays){
-
   refresh();
-
-  requestAnimationFrame(
-    refresh
-  );
-
-
-  delays.forEach(
-    d=>{
-      setTimeout(
-        refresh,
-        d
-      );
-    }
-  );
-
+  requestAnimationFrame(refresh);
+  delays.forEach(d=>{setTimeout(refresh,d)});
 }
-
 
 function bootLandscape(){
-
-  multiRefresh([
-    100,
-    350,
-    800,
-    1500
-  ]);
-
+  multiRefresh([100,350,800,1500]);
 }
 
+window.addEventListener("resize",scheduleResize);
 
-window.addEventListener(
-  "resize",
-  resize
-);
+["fullscreenchange","webkitfullscreenchange"].forEach(ev=>{
+  document.addEventListener(ev,()=>{
+    scheduleResize();
+    [150,500,1000].forEach(d=>setTimeout(resize,d));
+  });
+});
 
-
-window.addEventListener(
-  "orientationchange",
-  ()=>{
-
-    [
-      50,
-      250,
-      600,
-      1000
-    ].forEach(
-      d=>
-        setTimeout(
-          resize,
-          d
-        )
-    );
-
-  }
-);
-
+window.addEventListener("orientationchange",()=>{
+  [50,250,600,1000].forEach(d=>setTimeout(resize,d));
+});
 
 if(screen.orientation){
-
-  screen.orientation.addEventListener(
-    "change",
-    ()=>{
-
-      [
-        50,
-        300,
-        700
-      ].forEach(
-        d=>
-          setTimeout(
-            resize,
-            d
-          )
-      );
-
-    }
-  );
-
+  screen.orientation.addEventListener("change",()=>{
+    [50,300,700].forEach(d=>setTimeout(resize,d));
+  });
 }
 
-
 if(window.visualViewport){
-
-  window.visualViewport.addEventListener(
-    "resize",
-    resize
-  );
-
+  window.visualViewport.addEventListener("resize",scheduleResize);
 }
 
 
 /* =====================================================
    BOW
 ===================================================== */
+const bow={x:0,y:0,angle:0,pull:0};
 
-const bow={
-
-  x:0,
-  y:0,
-  angle:0,
-  pull:0
-
-};
-
-
-const getBowHeight=
-  ()=>145*gameScale;
-
-
-const getBowCurve=
-  ()=>48*gameScale;
-
-
-const getPullDistance=
-  ()=>bow.pull*75*gameScale;
-
+const getBowHeight=()=>145*gameScale;
+const getBowCurve=()=>48*gameScale;
+const getPullDistance=()=>bow.pull*75*gameScale;
 
 function setBowPosition(){
-
-  bow.x=
-    W*.15;
-
-  bow.y=
-    H*.53;
-
+  bow.x=W*.15;
+  bow.y=H*.53;
 }
 
 
 /* =====================================================
    TARGET
 ===================================================== */
+const target={x:0,y:0,baseX:0,baseY:0};
 
-const target={
-
-  x:0,
-  y:0,
-
-  baseX:0,
-  baseY:0
-
-};
-
-
-const getTargetRadius=
-  ()=>45*gameScale;
-
+const getTargetRadius=()=>45*gameScale;
 
 function moveTarget(randomize=true){
 
-  const minX=
-    W*.70;
-
-  const maxX=
-    W*.92;
-
-  const minY=
-    H*.20;
-
-  const maxY=
-    H*.78;
-
-
-  if(
-    randomize ||
-    target.x===0
-  ){
-
-    target.x=
-      minX+
-      Math.random()*
-      (maxX-minX);
-
-
-    target.y=
-      minY+
-      Math.random()*
-      (maxY-minY);
-
-
-    target.baseX=
-      target.x;
-
-    target.baseY=
-      target.y;
-
+  /* posisyon ay naka-save bilang % ng screen (nx, ny),
+     kaya kahit magbago ang laki / orientation, tama pa rin ang pwesto */
+  if(randomize||target.nx===undefined){
+    target.nx=.70+Math.random()*.22;
+    target.ny=.20+Math.random()*.58;
   }
+
+  target.baseX=target.nx*W;
+  target.baseY=target.ny*H;
+  target.x=target.baseX;
+  target.y=target.baseY;
 
 }
 
@@ -1237,217 +407,96 @@ function moveTarget(randomize=true){
 /* =====================================================
    STATE
 ===================================================== */
-
 let started=false;
-
 let dragging=false;
-
 let shooting=false;
-
 let power=0;
 
-
 let arrows=[];
-
 let particles=[];
-
 let hearts=[];
-
-
-/*
-   HP PICKUP
-
-   Isang heart lang ang pwedeng
-   nasa screen at a time.
-*/
 
 let healthHeart=null;
 
-
 let messageTimer=null;
-
 let activePointerId=null;
 
-
 let combo=0;
-
 let highestCombo=0;
 
-
 const MAX_LIVES=3;
-
 let lives=MAX_LIVES;
 
-
-/*
-   Heart pickup:
-   30 seconds bago mawala.
-*/
-
 const HEALTH_HEART_LIFETIME=30;
-
-
-/*
-   Chance na lumabas.
-   20% = approximately 1 out of 5 hits.
-*/
-
 const HEALTH_HEART_CHANCE=.20;
 
-
 let comboTargetTime=0;
-
 let targetMoveActive=false;
 
-
 let startPointerX=0;
-
 let startPointerY=0;
-
 
 const MOVE_COMBO=12;
 
 
 /* =====================================================
+   POWER BAR (isang DOM write lang per frame, kapag nagbago)
+===================================================== */
+let powerBarPct=-1;
+
+function syncPowerBar(){
+  const p=Math.round(power*1000)/10;
+  if(p!==powerBarPct){
+    powerBarPct=p;
+    powerBar.style.width=p+"%";
+  }
+}
+
+
+/* =====================================================
    BOW COLORS
 ===================================================== */
-
 const bowColors=[
-
-  "#e5e5e5",
-  "#ffd400",
-  "#ff3b30",
-  "#ff7a18",
-  "#ffe600",
-  "#28d17c",
-  "#00e5ff",
-  "#248cff",
-  "#5b5cff",
-  "#b84cff",
-  "#ff3cff",
-  "#ff4fa3",
-  "#ffffff",
-  "#8aff00",
-  "#00ffb3",
-  "#7c4dff",
-  "#ff1744",
-  "#00b8ff",
-  "#ff9100",
-  "#ff00d4"
-
+  "#e5e5e5","#ffd400","#ff3b30","#ff7a18","#ffe600",
+  "#28d17c","#00e5ff","#248cff","#5b5cff","#b84cff",
+  "#ff3cff","#ff4fa3","#ffffff","#8aff00","#00ffb3",
+  "#7c4dff","#ff1744","#00b8ff","#ff9100","#ff00d4"
 ];
 
-
-const getBowColor=
-  ()=>bowColors[
-    Math.min(
-      Math.floor(combo/3),
-      bowColors.length-1
-    )
-  ];
-
+const getBowColor=()=>bowColors[Math.min(Math.floor(combo/3),bowColors.length-1)];
 
 function getBowTier(){
-
   if(combo>=21)return 7;
-
   if(combo>=18)return 6;
-
   if(combo>=15)return 5;
-
   if(combo>=12)return 4;
-
   if(combo>=9)return 3;
-
   if(combo>=6)return 2;
-
   if(combo>=3)return 1;
-
   return 0;
-
 }
 
 
 /* =====================================================
    HIT MESSAGES
 ===================================================== */
-
-const praiseLow=[
-
-  "NICE SHOT",
-  "NICE HIT",
-  "GOOD AIM",
-  "LOVE YOU",
-  "I LOVE YOU",
-  "GOOD JOB"
-
-];
-
-
-const praiseMid=[
-
-  "WOW",
-  "GREAT SHOT",
-  "GOOD AIM",
-  "PERFECT",
-  "NICE HIT",
-  "I LOVE YOU",
-  "LOVE YOU"
-
-];
-
-
-const praiseHigh=[
-
-  "AWESOME",
-  "UNBELIEVABLE",
-  "AMAZING",
-  "INCREDIBLE",
-  "WOW",
-  "I LOVE YOU",
-  "I LOVE YOU SO MUCH"
-
-];
-
+const praiseLow=["NICE SHOT","NICE HIT","GOOD AIM","LOVE YOU","I LOVE IT","GOOD JOB"];
+const praiseMid=["WOW","GREAT SHOT","GOOD AIM","PERFECT","NICE HIT","I LOVE IT","LOVE YOU"];
+const praiseHigh=["AWESOME","UNBELIEVABLE","AMAZING","INCREDIBLE","WOW","I LOVE IT","YOU ARE AMAZING"];
 
 let lastPraise="";
 
-
 function pickPraise(){
 
-  const pool=
-    combo>=9
-
-      ?praiseHigh
-
-      :combo>=3
-
-        ?praiseMid
-
-        :praiseLow;
-
+  const pool=combo>=9?praiseHigh:combo>=3?praiseMid:praiseLow;
 
   let text;
 
-
   do{
-
-    text=
-      pool[
-        Math.floor(
-          Math.random()*
-          pool.length
-        )
-      ];
-
-  }while(
-    text===lastPraise &&
-    pool.length>1
-  );
-
+    text=pool[Math.floor(Math.random()*pool.length)];
+  }while(text===lastPraise&&pool.length>1);
 
   lastPraise=text;
-
   return text;
 
 }
@@ -1456,36 +505,16 @@ function pickPraise(){
 /* =====================================================
    COMBO HUD
 ===================================================== */
+function updateComboHud(pulse=false){
 
-function updateComboHud(
-  pulse=false
-){
-
-  comboCount.textContent=
-    `COMBO ${combo}`;
-
-
-  highestHit.textContent=
-    `HIGHEST HIT ${highestCombo}`;
-
-
-  comboHud.classList.add(
-    "active"
-  );
-
+  comboCount.textContent=`COMBO ${combo}`;
+  highestHit.textContent=`HIGHEST HIT ${highestCombo}`;
+  comboHud.classList.add("active");
 
   if(pulse){
-
-    comboCount.classList.remove(
-      "hot"
-    );
-
+    comboCount.classList.remove("hot");
     void comboCount.offsetWidth;
-
-    comboCount.classList.add(
-      "hot"
-    );
-
+    comboCount.classList.add("hot");
   }
 
 }
@@ -1494,28 +523,15 @@ function updateComboHud(
 /* =====================================================
    LIVES HUD
 ===================================================== */
-
 function updateLives(){
 
   let html="";
 
-
-  for(
-    let i=0;
-    i<MAX_LIVES;
-    i++
-  ){
-
-    html+=
-      i<lives
-        ?"♥ "
-        :"♡ ";
-
+  for(let i=0;i<MAX_LIVES;i++){
+    html+=i<lives?"♥ ":"♡ ";
   }
 
-
-  livesEl.textContent=
-    html.trim();
+  livesEl.textContent=html.trim();
 
 }
 
@@ -1523,33 +539,16 @@ function updateLives(){
 /* =====================================================
    RESET
 ===================================================== */
-
 function resetBowAndCombo(){
 
   combo=0;
-
   targetMoveActive=false;
-
   comboTargetTime=0;
-
   bow.angle=0;
-
   bow.pull=0;
-
   power=0;
 
-  powerBar.style.width=
-    "0%";
-
-
-  /*
-     Kapag full reset,
-     mawawala rin ang active
-     health pickup.
-  */
-
   healthHeart=null;
-
   hideHeartTimer();
 
   updateComboHud();
@@ -1560,47 +559,22 @@ function resetBowAndCombo(){
 /* =====================================================
    MISS
 ===================================================== */
-
 function handleMiss(){
 
-  lives=
-    Math.max(
-      0,
-      lives-1
-    );
-
-
+  lives=Math.max(0,lives-1);
   updateLives();
-
-
-  /*
-     First / second miss:
-     HP lang ang nababawasan.
-     Hindi mare-reset ang combo.
-  */
 
   if(lives<=0){
 
     resetBowAndCombo();
-
     lives=MAX_LIVES;
-
     updateLives();
 
-
-    showMessage(
-      "RESET!",
-      "miss",
-      1500
-    );
+    showMessage("RESET!","miss",1500);
 
   }else{
 
-    showMessage(
-      "MISS YOU!",
-      "miss",
-      1500
-    );
+    showMessage("MISS YOU!","miss",1500);
 
   }
 
@@ -1610,177 +584,46 @@ function handleMiss(){
 /* =====================================================
    HEALTH HEART PICKUP
 ===================================================== */
-
-/*
-   Random position.
-
-   IMPORTANT:
-   Hindi ito ilalagay sa target.
-   Pipili ito ng random safe position
-   sa playable area.
-*/
-
 function getRandomHealthPosition(){
 
-  /*
-     Safe margins.
-  */
-
-  const marginX=
-    Math.max(
-      70*gameScale,
-      W*.08
-    );
-
-
-  const marginTop=
-    Math.max(
-      80*gameScale,
-      H*.14
-    );
-
-
-  const marginBottom=
-    Math.max(
-      90*gameScale,
-      H*.16
-    );
-
-
-  /*
-     Avoid spawning too close
-     to the bow.
-  */
+  const marginX=Math.max(70*gameScale,W*.08);
+  const marginTop=Math.max(80*gameScale,H*.14);
+  const marginBottom=Math.max(90*gameScale,H*.16);
 
   let x=0;
   let y=0;
 
+  for(let tries=0;tries<30;tries++){
 
-  for(
-    let tries=0;
-    tries<30;
-    tries++
-  ){
+    x=marginX+Math.random()*Math.max(1,W-marginX*2);
+    y=marginTop+Math.random()*Math.max(1,H-marginTop-marginBottom);
 
-    x=
-      marginX+
-      Math.random()*
-      Math.max(
-        1,
-        W-marginX*2
-      );
-
-
-    y=
-      marginTop+
-      Math.random()*
-      Math.max(
-        1,
-        H-marginTop-marginBottom
-      );
-
-
-    const distanceFromBow=
-      Math.hypot(
-        x-bow.x,
-        y-bow.y
-      );
-
-
-    /*
-       At least around 150px
-       away from bow.
-    */
-
-    if(
-      distanceFromBow>
-      150*gameScale
-    ){
-
-      break;
-
-    }
+    if(Math.hypot(x-bow.x,y-bow.y)>150*gameScale)break;
 
   }
 
-
-  return{
-    x,
-    y
-  };
+  return{x,y};
 
 }
 
-
-/*
-   Spawn heart.
-
-   20% chance after a hit.
-*/
-
 function spawnHealthHeart(){
 
-  /*
-     Full HP = no pickup.
-  */
+  if(lives>=MAX_LIVES)return;
+  if(healthHeart)return;
+  if(Math.random()>HEALTH_HEART_CHANCE)return;
 
-  if(
-    lives>=MAX_LIVES
-  ){
-
-    return;
-
-  }
-
-
-  /*
-     One pickup at a time.
-  */
-
-  if(healthHeart){
-
-    return;
-
-  }
-
-
-  /*
-     Random chance.
-  */
-
-  if(
-    Math.random()>
-    HEALTH_HEART_CHANCE
-  ){
-
-    return;
-
-  }
-
-
-  const pos=
-    getRandomHealthPosition();
-
+  const pos=getRandomHealthPosition();
 
   healthHeart={
-
     x:pos.x,
-
     y:pos.y,
-
+    nx:pos.x/W,
+    ny:pos.y/H,
     life:HEALTH_HEART_LIFETIME,
-
     maxLife:HEALTH_HEART_LIFETIME,
-
-    pulse:
-      Math.random()*
-      Math.PI*2,
-
-    radius:
-      27*gameScale
-
+    pulse:Math.random()*Math.PI*2,
+    radius:27*gameScale
   };
-
 
   showHeartTimer();
 
@@ -1790,122 +633,58 @@ function spawnHealthHeart(){
 /* =====================================================
    HEART TIMER
 ===================================================== */
+let heartTimerPct=-1;
 
 function showHeartTimer(){
-
-  heartTimer.style.display=
-    "block";
-
+  heartTimerPct=-1;
+  heartTimer.style.display="block";
   updateHeartTimerPosition();
-
 }
-
 
 function hideHeartTimer(){
-
-  heartTimer.style.display=
-    "none";
-
+  heartTimer.style.display="none";
 }
-
 
 function updateHeartTimerPosition(){
 
-  if(
-    !healthHeart
-  ){
-
+  if(!healthHeart){
     hideHeartTimer();
-
     return;
-
   }
 
-
-  /*
-     Timer follows the random
-     heart position.
-  */
-
-  heartTimer.style.left=
-    healthHeart.x+"px";
-
-  heartTimer.style.top=
-    (
-      healthHeart.y+
-      42*gameScale
-    )+"px";
+  heartTimer.style.left=healthHeart.x+"px";
+  heartTimer.style.top=(healthHeart.y+42*gameScale)+"px";
 
 }
-
 
 function updateHeartTimer(){
 
-  if(
-    !healthHeart
-  ){
-
+  if(!healthHeart){
     hideHeartTimer();
-
     return;
-
   }
 
+  const p=Math.round(Math.max(0,healthHeart.life/healthHeart.maxLife)*1000)/10;
 
-  const percent=
-    Math.max(
-      0,
-      healthHeart.life/
-      healthHeart.maxLife
-    )*100;
-
-
-  heartTimerBar.style.width=
-    percent+"%";
-
-
-  updateHeartTimerPosition();
+  if(p!==heartTimerPct){
+    heartTimerPct=p;
+    heartTimerBar.style.width=p+"%";
+  }
 
 }
 
-
-/* =====================================================
-   UPDATE HEALTH HEART
-===================================================== */
-
 function updateHealthHeart(dt){
 
-  if(
-    !healthHeart
-  ){
-
-    return;
-
-  }
-
+  if(!healthHeart)return;
 
   healthHeart.life-=dt;
+  healthHeart.pulse+=dt*5;
 
-  healthHeart.pulse+=
-    dt*5;
-
-
-  /*
-     30 seconds reached.
-  */
-
-  if(
-    healthHeart.life<=0
-  ){
-
+  if(healthHeart.life<=0){
     healthHeart=null;
-
     hideHeartTimer();
-
     return;
-
   }
-
 
   updateHeartTimer();
 
@@ -1915,184 +694,52 @@ function updateHealthHeart(dt){
 /* =====================================================
    DRAW HEALTH HEART
 ===================================================== */
-
 function drawHealthHeart(){
 
-  if(
-    !healthHeart
-  ){
+  if(!healthHeart)return;
 
-    return;
+  const h=healthHeart;
+  const g=gameScale;
 
-  }
-
-
-  const h=
-    healthHeart;
-
-
-  const g=
-    gameScale;
-
-
-  /*
-     Pulse animation.
-  */
-
-  const pulse=
-    (
-      1+
-      Math.sin(
-        h.pulse
-      )*.13
-    );
-
-
-  /*
-     Last 5 seconds:
-     blink slightly.
-  */
+  const pulse=1+Math.sin(h.pulse)*.13;
 
   let alpha=1;
 
-
-  if(
-    h.life<=5
-  ){
-
-    alpha=
-      .45+
-      (
-        Math.sin(
-          h.pulse*2
-        )*.45
-      );
-
+  if(h.life<=5){
+    alpha=.45+Math.sin(h.pulse*2)*.45;
   }
-
 
   ctx.save();
 
+  ctx.globalAlpha=alpha;
+  ctx.translate(h.x,h.y);
+  ctx.scale(pulse,pulse);
 
-  ctx.globalAlpha=
-    alpha;
+  ctx.shadowColor="#ff304f";
+  ctx.shadowBlur=22*g;
+  ctx.fillStyle="#ff304f";
 
-
-  ctx.translate(
-    h.x,
-    h.y
-  );
-
-
-  ctx.scale(
-    pulse,
-    pulse
-  );
-
-
-  /*
-     Outer glow.
-  */
-
-  ctx.shadowColor=
-    "#ff304f";
-
-  ctx.shadowBlur=
-    22*g;
-
-
-  ctx.fillStyle=
-    "#ff304f";
-
-
-  /*
-     Heart.
-  */
-
-  const r=
-    25*g;
-
+  const r=25*g;
 
   ctx.beginPath();
-
-
-  ctx.moveTo(
-    0,
-    r*.65
-  );
-
-
-  ctx.bezierCurveTo(
-    -r*1.25,
-    -r*.05,
-    -r*.78,
-    -r*.95,
-    0,
-    -r*.35
-  );
-
-
-  ctx.bezierCurveTo(
-    r*.78,
-    -r*.95,
-    r*1.25,
-    -r*.05,
-    0,
-    r*.65
-  );
-
-
+  ctx.moveTo(0,r*.65);
+  ctx.bezierCurveTo(-r*1.25,-r*.05,-r*.78,-r*.95,0,-r*.35);
+  ctx.bezierCurveTo(r*.78,-r*.95,r*1.25,-r*.05,0,r*.65);
   ctx.fill();
-
-
-  /*
-     Inner white shine.
-  */
 
   ctx.shadowBlur=0;
-
-  ctx.fillStyle=
-    "rgba(255,255,255,.9)";
-
+  ctx.fillStyle="rgba(255,255,255,.9)";
 
   ctx.beginPath();
-
-
-  ctx.arc(
-    -8*g,
-    -9*g,
-    4*g,
-    0,
-    Math.PI*2
-  );
-
-
+  ctx.arc(-8*g,-9*g,4*g,0,Math.PI*2);
   ctx.fill();
 
-
-  /*
-     Small outer ring.
-  */
-
-  ctx.strokeStyle=
-    "rgba(255,255,255,.55)";
-
-  ctx.lineWidth=
-    1.5*g;
-
+  ctx.strokeStyle="rgba(255,255,255,.55)";
+  ctx.lineWidth=1.5*g;
 
   ctx.beginPath();
-
-  ctx.arc(
-    0,
-    0,
-    34*g,
-    0,
-    Math.PI*2
-  );
-
+  ctx.arc(0,0,34*g,0,Math.PI*2);
   ctx.stroke();
-
 
   ctx.restore();
 
@@ -2102,136 +749,37 @@ function drawHealthHeart(){
 /* =====================================================
    CHECK HEART COLLISION
 ===================================================== */
+function checkHealthHeartHit(oldX,oldY,newX,newY){
 
-function checkHealthHeartHit(
-  oldX,
-  oldY,
-  newX,
-  newY
-){
+  if(!healthHeart)return false;
+  if(lives>=MAX_LIVES)return false;
 
-  if(
-    !healthHeart
-  ){
+  const h=healthHeart;
 
-    return false;
+  if(!segmentHitsCircle(oldX,oldY,newX,newY,h.x,h.y,h.radius))return false;
 
-  }
-
-
-  /*
-     Already full HP.
-  */
-
-  if(
-    lives>=MAX_LIVES
-  ){
-
-    return false;
-
-  }
-
-
-  const h=
-    healthHeart;
-
-
-  const hit=
-    segmentHitsCircle(
-      oldX,
-      oldY,
-      newX,
-      newY,
-      h.x,
-      h.y,
-      h.radius
-    );
-
-
-  if(
-    !hit
-  ){
-
-    return false;
-
-  }
-
-
-  /*
-     +1 HP
-  */
-
-  lives=
-    Math.min(
-      MAX_LIVES,
-      lives+1
-    );
-
-
+  lives=Math.min(MAX_LIVES,lives+1);
   updateLives();
 
-
-  /*
-     Remove pickup.
-  */
-
   healthHeart=null;
-
   hideHeartTimer();
-
-
-  /*
-     Sound.
-  */
 
   playHealthSound();
 
+  showMessage("+1 LIFE!","love",1100);
 
-  /*
-     Message.
-  */
-
-  showMessage(
-    "+1 LIFE!",
-    "love",
-    1100
-  );
-
-
-  /*
-     Pickup particles.
-  */
-
-  for(
-    let j=0;
-    j<12;
-    j++
-  ){
+  for(let j=0;j<12;j++){
 
     particles.push({
-
       x:h.x,
-
       y:h.y,
-
-      vx:
-        (Math.random()-.5)*
-        180,
-
-      vy:
-        (Math.random()-.5)*
-        180,
-
+      vx:(Math.random()-.5)*180,
+      vy:(Math.random()-.5)*180,
       life:.55,
-
-      size:
-        2+
-        Math.random()*4
-
+      size:2+Math.random()*4
     });
 
   }
-
 
   return true;
 
@@ -2241,235 +789,84 @@ function checkHealthHeartHit(
 /* =====================================================
    AUDIO
 ===================================================== */
-
 let audioCtx=null;
-
 
 function initAudio(){
 
-  if(
-    !audioCtx
-  ){
-
-    audioCtx=
-      new(
-        window.AudioContext||
-        window.webkitAudioContext
-      )();
-
+  if(!audioCtx){
+    audioCtx=new(window.AudioContext||window.webkitAudioContext)();
   }
 
-
-  if(
-    audioCtx.state===
-    "suspended"
-  ){
-
+  if(audioCtx.state==="suspended"){
     audioCtx.resume();
-
   }
 
 }
 
+function beep(type,f0,f1,dur,vol){
 
-function beep(
-  type,
-  f0,
-  f1,
-  dur,
-  vol
-){
+  if(!audioCtx)return;
 
-  if(
-    !audioCtx
-  ){
+  const t=audioCtx.currentTime;
+  const osc=audioCtx.createOscillator();
+  const gain=audioCtx.createGain();
 
-    return;
+  osc.type=type;
+  osc.frequency.setValueAtTime(f0,t);
+  osc.frequency.exponentialRampToValueAtTime(f1,t+dur);
 
-  }
-
-
-  const t=
-    audioCtx.currentTime;
-
-
-  const osc=
-    audioCtx.createOscillator();
-
-
-  const gain=
-    audioCtx.createGain();
-
-
-  osc.type=
-    type;
-
-
-  osc.frequency.setValueAtTime(
-    f0,
-    t
-  );
-
-
-  osc.frequency.exponentialRampToValueAtTime(
-    f1,
-    t+dur
-  );
-
-
-  gain.gain.setValueAtTime(
-    vol,
-    t
-  );
-
-
-  gain.gain.exponentialRampToValueAtTime(
-    .001,
-    t+dur
-  );
-
+  gain.gain.setValueAtTime(vol,t);
+  gain.gain.exponentialRampToValueAtTime(.001,t+dur);
 
   osc.connect(gain);
-
-  gain.connect(
-    audioCtx.destination
-  );
-
+  gain.connect(audioCtx.destination);
 
   osc.start();
-
-  osc.stop(
-    t+dur
-  );
+  osc.stop(t+dur);
 
 }
 
-
-const playShootSound=
-  ()=>beep(
-    "triangle",
-    180,
-    65,
-    .2,
-    .08
-  );
-
-
-const playHitSound=
-  ()=>beep(
-    "sine",
-    500,
-    950,
-    .5,
-    .12
-  );
-
+const playShootSound=()=>beep("triangle",180,65,.2,.08);
+const playHitSound=()=>beep("sine",500,950,.5,.12);
 
 const playHealthSound=()=>{
-
-  beep(
-    "sine",
-    600,
-    1000,
-    .16,
-    .12
-  );
-
-
-  setTimeout(
-    ()=>{
-
-      beep(
-        "sine",
-        900,
-        1400,
-        .18,
-        .10
-      );
-
-    },
-    80
-  );
-
+  beep("sine",600,1000,.16,.12);
+  setTimeout(()=>{beep("sine",900,1400,.18,.10)},80);
 };
 
 
 /* =====================================================
    FULLSCREEN
 ===================================================== */
-
 async function enterFullscreen(){
 
-  const de=
-    document.documentElement;
-
+  const de=document.documentElement;
 
   try{
-
-    if(
-      !document.fullscreenElement &&
-      de.requestFullscreen
-    ){
-
-      await de
-        .requestFullscreen({
-          navigationUI:"hide"
-        })
-        .catch(()=>{});
-
+    if(!document.fullscreenElement&&de.requestFullscreen){
+      await de.requestFullscreen({navigationUI:"hide"}).catch(()=>{});
     }
-
   }catch(_){}
 
-
   try{
-
-    if(
-      !document.fullscreenElement &&
-      de.webkitRequestFullscreen
-    ){
-
-      await Promise
-        .resolve(
-          de.webkitRequestFullscreen()
-        )
-        .catch(()=>{});
-
+    if(!document.fullscreenElement&&de.webkitRequestFullscreen){
+      await Promise.resolve(de.webkitRequestFullscreen()).catch(()=>{});
     }
-
   }catch(_){}
 
 }
-
 
 async function requestLandscape(){
 
   await enterFullscreen();
 
-
   try{
-
-    if(
-      screen.orientation &&
-      typeof screen.orientation.lock===
-      "function"
-    ){
-
-      await screen.orientation
-        .lock("landscape")
-        .catch(()=>{});
-
+    if(screen.orientation&&typeof screen.orientation.lock==="function"){
+      await screen.orientation.lock("landscape").catch(()=>{});
     }
-
   }catch(_){}
 
-
-  multiRefresh([
-    100,
-    400,
-    900,
-    1500
-  ]);
+  multiRefresh([100,400,900,1500]);
 
 }
 
@@ -2477,441 +874,192 @@ async function requestLandscape(){
 /* =====================================================
    START
 ===================================================== */
+startScreen.addEventListener("click",async()=>{
 
-startScreen.addEventListener(
-  "click",
-  async()=>{
+  initAudio();
 
-    initAudio();
+  started=true;
 
-    started=true;
+  startScreen.style.display="none";
 
-    startScreen.style.display=
-      "none";
+  powerContainer.style.opacity="1";
+  instruction.style.opacity="1";
+  musicButton.style.display="block";
 
+  comboHud.classList.add("active");
 
-    powerContainer.style.opacity=
-      "1";
+  lives=MAX_LIVES;
+  healthHeart=null;
+  hideHeartTimer();
 
-    instruction.style.opacity=
-      "1";
+  updateComboHud();
+  updateLives();
 
-    musicButton.style.display=
-      "block";
+  await requestLandscape();
 
+  refresh();
 
-    comboHud.classList.add(
-      "active"
-    );
-
-
-    lives=MAX_LIVES;
-
-    healthHeart=null;
-
-    hideHeartTimer();
-
-
-    updateComboHud();
-
-    updateLives();
-
-
-    await requestLandscape();
-
-
-    refresh();
-
-
-    try{
-
-      bgMusic.volume=.35;
-
-      await bgMusic.play();
-
-    }catch(error){
-
-      console.log(
-        "Music error:",
-        error
-      );
-
-    }
-
+  try{
+    bgMusic.volume=.35;
+    await bgMusic.play();
+  }catch(error){
+    console.log("Music error:",error);
   }
-);
+
+});
 
 
 /* =====================================================
    MUSIC
 ===================================================== */
+musicButton.addEventListener("click",e=>{
 
-musicButton.addEventListener(
-  "click",
-  e=>{
+  e.stopPropagation();
 
-    e.stopPropagation();
-
-
-    if(
-      bgMusic.paused
-    ){
-
-      bgMusic.play();
-
-      musicButton.textContent=
-        "♪";
-
-    }else{
-
-      bgMusic.pause();
-
-      musicButton.textContent=
-        "×";
-
-    }
-
+  if(bgMusic.paused){
+    bgMusic.play();
+    musicButton.textContent="♪";
+  }else{
+    bgMusic.pause();
+    musicButton.textContent="×";
   }
-);
+
+});
 
 
 /* =====================================================
    FLIP
 ===================================================== */
+flipButton.addEventListener("click",e=>{
 
-flipButton.addEventListener(
-  "click",
-  e=>{
+  e.stopPropagation();
 
-    e.stopPropagation();
+  manualFlip=true;
+  rotCCW=!rotCCW;
 
-    manualFlip=true;
+  refresh();
 
-    rotCCW=!rotCCW;
-
-    refresh();
-
-  }
-);
+});
 
 
 /* =====================================================
    POINTER
 ===================================================== */
-
 function getGamePointer(e){
 
-  const vp=
-    getViewportSize();
+  const vp=getViewportSize();
 
+  const x=e.clientX;
+  const y=e.clientY;
 
-  const x=
-    e.clientX;
+  if(mobilePortrait){
 
-  const y=
-    e.clientY;
-
-
-  if(
-    mobilePortrait
-  ){
-
-    if(
-      !rotCCW
-    ){
-
-      return{
-
-        x:
-          vp.height-y,
-
-        y:x
-
-      };
-
+    if(!rotCCW){
+      return{x:vp.height-y,y:x};
     }
 
-
-    return{
-
-      x:y,
-
-      y:
-        vp.width-x
-
-    };
+    return{x:y,y:vp.width-x};
 
   }
 
-
-  return{
-
-    x,
-    y
-
-  };
+  return{x,y};
 
 }
 
+canvas.addEventListener("pointerdown",e=>{
 
-canvas.addEventListener(
-  "pointerdown",
-  e=>{
+  if(!started||shooting)return;
 
-    if(
-      !started||
-      shooting
-    ){
+  if(e.pointerType==="mouse"&&e.button!==0)return;
 
-      return;
+  initAudio();
 
-    }
+  dragging=true;
+  activePointerId=e.pointerId;
 
+  const p=getGamePointer(e);
 
-    if(
-      e.pointerType==="mouse" &&
-      e.button!==0
-    ){
+  startPointerX=p.x;
+  startPointerY=p.y;
 
-      return;
+  power=0;
+  bow.pull=0;
 
-    }
+  try{
+    canvas.setPointerCapture(e.pointerId);
+  }catch(_){}
 
+});
 
-    initAudio();
+canvas.addEventListener("pointermove",e=>{
 
+  if(!dragging||e.pointerId!==activePointerId)return;
 
-    dragging=true;
+  const p=getGamePointer(e);
 
-    activePointerId=
-      e.pointerId;
+  const dx=p.x-startPointerX;
+  const dy=p.y-startPointerY;
 
+  bow.angle=clamp(Math.atan2(dy,Math.abs(dx)+160*gameScale),-.65,.65);
 
-    const p=
-      getGamePointer(e);
+  power=clamp(Math.max(0,-dx)/(240*gameScale),0,1);
 
+  bow.pull=power;
 
-    startPointerX=
-      p.x;
-
-    startPointerY=
-      p.y;
-
-
-    power=0;
-
-    bow.pull=0;
-
-
-    powerBar.style.width=
-      "0%";
-
-
-    try{
-
-      canvas.setPointerCapture(
-        e.pointerId
-      );
-
-    }catch(_){}
-
-  }
-);
-
-
-canvas.addEventListener(
-  "pointermove",
-  e=>{
-
-    if(
-      !dragging ||
-      e.pointerId!==activePointerId
-    ){
-
-      return;
-
-    }
-
-
-    const p=
-      getGamePointer(e);
-
-
-    const dx=
-      p.x-startPointerX;
-
-
-    const dy=
-      p.y-startPointerY;
-
-
-    bow.angle=
-      clamp(
-        Math.atan2(
-          dy,
-          Math.abs(dx)+
-          160*gameScale
-        ),
-        -.65,
-        .65
-      );
-
-
-    power=
-      clamp(
-        Math.max(0,-dx)/
-        (240*gameScale),
-        0,
-        1
-      );
-
-
-    bow.pull=
-      power;
-
-
-    powerBar.style.width=
-      (power*100)+"%";
-
-  },
-  {
-    passive:true
-  }
-);
-
+},{passive:true});
 
 function endPointer(e){
 
-  if(
-    !dragging ||
-    e.pointerId!==activePointerId
-  ){
-
-    return;
-
-  }
-
+  if(!dragging||e.pointerId!==activePointerId)return;
 
   dragging=false;
 
-
   try{
-
-    canvas.releasePointerCapture(
-      e.pointerId
-    );
-
+    canvas.releasePointerCapture(e.pointerId);
   }catch(_){}
-
 
   activePointerId=null;
 
-
-  if(
-    power>=.05
-  ){
-
+  if(power>=.05){
     shoot();
-
   }else{
-
     power=0;
-
     bow.pull=0;
-
-    powerBar.style.width=
-      "0%";
-
   }
 
 }
 
-
-canvas.addEventListener(
-  "pointerup",
-  endPointer
-);
-
-
-canvas.addEventListener(
-  "pointercancel",
-  endPointer
-);
+canvas.addEventListener("pointerup",endPointer);
+canvas.addEventListener("pointercancel",endPointer);
 
 
 /* =====================================================
    SHOOT
 ===================================================== */
-
-const arrowSpeed=
-  p=>
-    (
-      430+
-      p*1050
-    )*
-    Math.max(
-      .75,
-      gameScale
-    );
-
+const arrowSpeed=p=>(430+p*1050)*Math.max(.75,gameScale);
 
 function shoot(){
 
-  if(
-    shooting
-  ){
-
-    return;
-
-  }
-
+  if(shooting)return;
 
   shooting=true;
 
-
-  const angle=
-    bow.angle;
-
-
-  const speed=
-    arrowSpeed(power);
-
+  const angle=bow.angle;
+  const speed=arrowSpeed(power);
 
   arrows.push({
-
     x:bow.x,
-
     y:bow.y,
-
-    vx:
-      Math.cos(angle)*
-      speed,
-
-    vy:
-      Math.sin(angle)*
-      speed,
-
+    vx:Math.cos(angle)*speed,
+    vy:Math.sin(angle)*speed,
     rotation:angle,
-
-    length:
-      82*gameScale,
-
-    gravity:
-      180*gameScale,
-
+    length:82*gameScale,
+    gravity:180*gameScale,
     alive:true
-
   });
 
-
   power=0;
-
   bow.pull=0;
-
-
-  powerBar.style.width=
-    "0%";
-
 
   playShootSound();
 
@@ -2921,126 +1069,54 @@ function shoot(){
 /* =====================================================
    UPDATE
 ===================================================== */
-
-let lastTime=
-  performance.now();
-
-let now=
-  lastTime;
-
+let lastTime=performance.now();
+let now=lastTime;
 
 let perfFrames=0;
-
 let perfTime=0;
 
+function segmentHitsCircle(x1,y1,x2,y2,cx,cy,r){
 
-function segmentHitsCircle(
-  x1,y1,
-  x2,y2,
-  cx,cy,
-  r
-){
+  const dx=x2-x1;
+  const dy=y2-y1;
 
-  const dx=
-    x2-x1;
+  const len2=dx*dx+dy*dy;
 
-  const dy=
-    y2-y1;
+  let t=len2>0?((cx-x1)*dx+(cy-y1)*dy)/len2:0;
 
+  t=t<0?0:t>1?1:t;
 
-  const len2=
-    dx*dx+
-    dy*dy;
-
-
-  let t=
-    len2>0
-
-      ?(
-        (cx-x1)*dx+
-        (cy-y1)*dy
-      )/len2
-
-      :0;
-
-
-  t=
-    t<0
-      ?0
-      :t>1
-        ?1
-        :t;
-
-
-  return Math.hypot(
-    x1+dx*t-cx,
-    y1+dy*t-cy
-  )<r;
+  return Math.hypot(x1+dx*t-cx,y1+dy*t-cy)<r;
 
 }
 
-
 function update(time){
 
-  requestAnimationFrame(
-    update
-  );
+  requestAnimationFrame(update);
 
-
-  const rawDt=
-    (time-lastTime)/1000;
-
+  const rawDt=(time-lastTime)/1000;
 
   lastTime=time;
-
   now=time;
 
-
-  const dt=
-    Math.max(
-      0,
-      Math.min(
-        rawDt,
-        .033
-      )
-    );
+  const dt=Math.max(0,Math.min(rawDt,.033));
 
 
-  /* ================= PERFORMANCE ================= */
+  /* ================= PERFORMANCE (auto-DPR safety net) ================= */
 
-  if(
-    started &&
-    rawDt<.25
-  ){
+  if(started&&rawDt<.25){
 
     perfTime+=rawDt;
-
     perfFrames++;
 
+    if(perfFrames>=90){
 
-    if(
-      perfFrames>=90
-    ){
-
-      if(
-        perfTime/perfFrames>.0205 &&
-        dprCap>1
-      ){
-
-        dprCap=
-          Math.max(
-            1,
-            dprCap-.25
-          );
-
-
+      if(perfTime/perfFrames>.0205&&dprCap>1){
+        dprCap=Math.max(1,dprCap-.25);
         resize();
-
       }
 
-
       perfFrames=0;
-
       perfTime=0;
 
     }
@@ -3050,214 +1126,88 @@ function update(time){
 
   /* ================= TARGET MOVEMENT ================= */
 
-  if(
-    combo<MOVE_COMBO
-  ){
-
+  if(combo<MOVE_COMBO){
     comboTargetTime=0;
-
-
-    target.x=
-      target.baseX;
-
-    target.y=
-      target.baseY;
-
+    target.x=target.baseX;
+    target.y=target.baseY;
   }
 
-
-  if(
-    targetMoveActive &&
-    combo>=MOVE_COMBO
-  ){
+  if(targetMoveActive&&combo>=MOVE_COMBO){
 
     comboTargetTime+=dt;
 
+    const m=(10+Math.min(combo-MOVE_COMBO,30)*.8)*gameScale;
 
-    const m=
-      (
-        10+
-        Math.min(
-          combo-MOVE_COMBO,
-          30
-        )*.8
-      )*
-      gameScale;
-
-
-    target.x=
-      clamp(
-        target.baseX+
-        Math.sin(
-          comboTargetTime*2.7
-        )*m*3,
-        W*.66,
-        W*.94
-      );
-
-
-    target.y=
-      clamp(
-        target.baseY+
-        Math.sin(
-          comboTargetTime*3.9
-        )*m*2,
-        H*.16,
-        H*.82
-      );
+    target.x=clamp(target.baseX+Math.sin(comboTargetTime*2.7)*m*3,W*.66,W*.94);
+    target.y=clamp(target.baseY+Math.sin(comboTargetTime*3.9)*m*2,H*.16,H*.82);
 
   }
 
-
-  const tr=
-    getTargetRadius();
+  const tr=getTargetRadius();
 
 
   /* ================= ARROWS ================= */
 
-  for(
-    let i=arrows.length-1;
-    i>=0;
-    i--
-  ){
+  for(let i=arrows.length-1;i>=0;i--){
 
-    const a=
-      arrows[i];
+    const a=arrows[i];
 
+    const oldTipX=a.x+Math.cos(a.rotation)*a.length;
+    const oldTipY=a.y+Math.sin(a.rotation)*a.length;
 
-    const oldTipX=
-      a.x+
-      Math.cos(a.rotation)*
-      a.length;
+    a.x+=a.vx*dt;
+    a.y+=a.vy*dt+.5*a.gravity*dt*dt;
+    a.vy+=a.gravity*dt;
 
+    a.rotation=Math.atan2(a.vy,a.vx);
 
-    const oldTipY=
-      a.y+
-      Math.sin(a.rotation)*
-      a.length;
+    const tipX=a.x+Math.cos(a.rotation)*a.length;
+    const tipY=a.y+Math.sin(a.rotation)*a.length;
 
-
-    a.x+=
-      a.vx*dt;
-
-
-    a.y+=
-      a.vy*dt+
-      .5*a.gravity*
-      dt*dt;
-
-
-    a.vy+=
-      a.gravity*dt;
-
-
-    a.rotation=
-      Math.atan2(
-        a.vy,
-        a.vx
-      );
-
-
-    const tipX=
-      a.x+
-      Math.cos(a.rotation)*
-      a.length;
-
-
-    const tipY=
-      a.y+
-      Math.sin(a.rotation)*
-      a.length;
-
-
-    /*
-       HEALTH HEART FIRST.
-
-       Kapag heart ang tinamaan,
-       +1 HP lang at hindi magco-combo.
-    */
-
-    if(
-      checkHealthHeartHit(
-        oldTipX,
-        oldTipY,
-        tipX,
-        tipY
-      )
-    ){
-
+    if(checkHealthHeartHit(oldTipX,oldTipY,tipX,tipY)){
       a.alive=false;
-
       continue;
-
     }
 
-
-    /* ================= TARGET HIT ================= */
-
-    if(
-      segmentHitsCircle(
-        oldTipX,
-        oldTipY,
-        tipX,
-        tipY,
-        target.x,
-        target.y,
-        tr
-      )
-    ){
-
+    if(segmentHitsCircle(oldTipX,oldTipY,tipX,tipY,target.x,target.y,tr)){
       a.alive=false;
-
       hitTarget();
-
       continue;
-
     }
 
-
-    /* ================= MISS ================= */
-
-    if(
-      a.x>W+200 ||
-      a.x<-200 ||
-      a.y>H+200 ||
-      a.y<-200
-    ){
-
+    if(a.x>W+200||a.x<-200||a.y>H+200||a.y<-200){
       a.alive=false;
-
       handleMiss();
-
     }
 
   }
 
-
-  arrows=
-    arrows.filter(
-      a=>a.alive
-    );
-
-
-  if(
-    shooting &&
-    arrows.length===0
-  ){
-
-    shooting=false;
-
+  /* in-place compaction (walang bagong array every frame) */
+  {
+    let n=0;
+    for(let i=0;i<arrows.length;i++){
+      if(arrows[i].alive)arrows[n++]=arrows[i];
+    }
+    arrows.length=n;
   }
 
+  if(shooting&&arrows.length===0){
+    shooting=false;
+  }
 
   updateParticles(dt);
-
   updateHearts(dt);
-
   updateHealthHeart(dt);
 
+  syncPowerBar();
 
   draw();
+
+  /* idle-time warm up ng bow cache (1 bitmap lang per frame,
+     at kapag may sobrang oras lang ang frame) */
+  if(started&&rawDt<.02){
+    warmBowCache();
+  }
 
 }
 
@@ -3265,46 +1215,381 @@ function update(time){
 /* =====================================================
    DRAW
 ===================================================== */
-
 function draw(){
 
-  ctx.clearRect(
-    0,
-    0,
-    W,
-    H
-  );
-
+  ctx.clearRect(0,0,W,H);
 
   drawAimGuide();
-
   drawTarget();
-
-
-  /*
-     IMPORTANT:
-     Heart pickup is independent
-     from the target position.
-  */
-
   drawHealthHeart();
-
-
   drawBow();
 
+  for(let i=0;i<arrows.length;i++){
+    drawArrow(arrows[i]);
+  }
 
-  for(
-    const a of arrows
-  ){
+  drawParticles();
+  drawHearts();
 
-    drawArrow(a);
+}
+
+
+/* =====================================================
+   BOW CACHE
+
+   Ang mabigat sa dati: shadowBlur + "lighter" layers ng bow
+   (tier 1-7) ay ini-render ulit every frame. Ngayon, ang
+   glow layers ay isang beses lang ni-render sa offscreen
+   bitmap at drawImage na lang every frame. Pareho ang code
+   ng design, pareho ang itsura — cache lang.
+
+   - pulse ay naka-quantize sa 12 steps (hindi mo mapapansin)
+   - ang rotating rings (tier 6+) ay sprite na iniikot
+   - ang basic bow, string, fire, aiming arrow: live pa rin
+===================================================== */
+const PULSE_STEPS=12;
+
+const bowCache=new Map();
+let bowCacheState="";
+
+const ringCache=new Map();
+
+const pulseIdx=p=>clamp(Math.round((p-.92)/.16*(PULSE_STEPS-1)),0,PULSE_STEPS-1);
+const pulseVal=i=>.92+.16*i/(PULSE_STEPS-1);
+
+function bowStateKey(tier){
+
+  const ci=Math.min(Math.floor(combo/3),bowColors.length-1);
+
+  return curDpr+"|"+gameScale.toFixed(4)+"|"+tier+"|"+ci+"|"+(tier>=4?Math.min(combo-18,30):0);
+
+}
+
+function bowPath(c,h,curve,extra){
+
+  c.beginPath();
+  c.moveTo(0,-h/2);
+  c.quadraticCurveTo(curve+extra,0,0,h/2);
+
+}
+
+function drawTips(c,tierColor,size,blur){
+
+  const h=getBowHeight();
+
+  for(let n=0;n<2;n++){
+
+    const tipY=n===0?-h/2:h/2;
+
+    c.save();
+
+    c.translate(2*gameScale,tipY);
+    c.rotate(Math.PI/4);
+
+    c.fillStyle=tierColor;
+    c.shadowColor=tierColor;
+    c.shadowBlur=blur*gameScale;
+
+    c.fillRect(-size/2,-size/2,size,size);
+
+    c.restore();
 
   }
 
+}
 
-  drawParticles();
+/* Layer A: tier 1 -> tier 4+ glow/core (walang ring at walang basic bow) */
+function paintBowA(c,tier,tierColor,pulse,comboSnap){
 
-  drawHearts();
+  const g=gameScale;
+  const h=getBowHeight();
+  const curve=getBowCurve();
+
+  /* TIER 1 */
+  if(tier>=1){
+
+    c.save();
+
+    c.globalCompositeOperation="lighter";
+    c.strokeStyle=tierColor;
+    c.shadowColor=tierColor;
+    c.shadowBlur=5*g;
+    c.lineWidth=8*g;
+
+    bowPath(c,h,curve,12*g);
+    c.stroke();
+
+    c.restore();
+
+  }
+
+  /* TIER 2 */
+  if(tier>=2){
+
+    c.save();
+
+    c.strokeStyle=tierColor;
+    c.shadowColor=tierColor;
+    c.shadowBlur=12*g;
+    c.lineWidth=3*g*pulse;
+
+    c.beginPath();
+    c.moveTo(4*g,-h/2+7*g);
+    c.quadraticCurveTo(curve+4*g,0,4*g,h/2-7*g);
+    c.stroke();
+
+    c.restore();
+
+    drawTips(c,tierColor,7*g*pulse,13);
+
+  }
+
+  /* TIER 3 */
+  if(tier>=3){
+
+    c.save();
+
+    c.globalCompositeOperation="lighter";
+    c.strokeStyle=tierColor;
+    c.shadowColor=tierColor;
+    c.shadowBlur=9*g;
+    c.lineWidth=2*g;
+
+    for(let n=0;n<2;n++){
+
+      const o=n===0?-7:7;
+
+      c.beginPath();
+      c.moveTo(o*g,-h*.42);
+      c.quadraticCurveTo((curve+o*.35)*g,0,o*g,h*.42);
+      c.stroke();
+
+    }
+
+    c.restore();
+
+  }
+
+  /* TIER 4+ */
+  if(tier>=4){
+
+    const vipColor=tierColor;
+    const vipGlow=10+Math.min(comboSnap-18,30)*.35;
+
+    c.save();
+
+    c.globalCompositeOperation="lighter";
+    c.strokeStyle=vipColor;
+    c.shadowColor=vipColor;
+    c.shadowBlur=vipGlow*g;
+    c.lineWidth=9*g*pulse;
+    c.lineCap="round";
+
+    bowPath(c,h,curve,10*g);
+    c.stroke();
+
+    c.restore();
+
+    c.save();
+
+    c.strokeStyle=vipColor;
+    c.shadowColor=vipColor;
+    c.shadowBlur=5*g;
+    c.lineWidth=Math.max(2,2.5*g);
+
+    c.beginPath();
+    c.moveTo(5*g,-h/2+9*g);
+    c.quadraticCurveTo(curve-5*g,0,5*g,h/2-9*g);
+    c.stroke();
+
+    c.restore();
+
+    drawTips(c,vipColor,8*g,12);
+
+    c.save();
+
+    c.fillStyle=vipColor;
+    c.shadowColor=vipColor;
+    c.shadowBlur=14*g;
+
+    c.beginPath();
+    c.arc(0,0,7*g,0,Math.PI*2);
+    c.fill();
+
+    c.fillStyle="#fff";
+    c.shadowBlur=0;
+
+    c.beginPath();
+    c.arc(0,0,2.2*g,0,Math.PI*2);
+    c.fill();
+
+    c.restore();
+
+  }
+
+}
+
+/* Layer C: tier 7 pulsing circle */
+function paintBowC(c,tierColor,pulse){
+
+  const g=gameScale;
+
+  c.save();
+
+  c.globalCompositeOperation="lighter";
+  c.strokeStyle=tierColor;
+  c.shadowColor=tierColor;
+  c.shadowBlur=24*g;
+  c.lineWidth=3*g;
+
+  c.beginPath();
+  c.arc(0,0,14*g*pulse,0,Math.PI*2);
+  c.stroke();
+
+  c.restore();
+
+}
+
+function makeBowBitmap(painter){
+
+  const g=gameScale;
+  const hh=getBowHeight();
+
+  const ox=Math.ceil(44*g);
+  const oy=Math.ceil(hh/2+40*g);
+  const w=Math.ceil(ox+74*g);
+  const h=oy*2;
+
+  const c=document.createElement("canvas");
+
+  c.width=Math.ceil(w*curDpr);
+  c.height=Math.ceil(h*curDpr);
+
+  const x=c.getContext("2d");
+
+  x.setTransform(curDpr,0,0,curDpr,ox*curDpr,oy*curDpr);
+
+  painter(x);
+
+  return{
+    c,
+    ox,
+    oy,
+    w:c.width/curDpr,
+    h:c.height/curDpr
+  };
+
+}
+
+function getBowLayer(kind,tier,pi){
+
+  const state=bowStateKey(tier);
+
+  if(state!==bowCacheState){
+    bowCache.clear();
+    bowCacheState=state;
+  }
+
+  const key=kind+pi;
+
+  let bmp=bowCache.get(key);
+
+  if(!bmp){
+
+    const color=getBowColor();
+    const pulse=pulseVal(pi);
+    const comboSnap=combo;
+
+    bmp=makeBowBitmap(x=>{
+      if(kind==="A")paintBowA(x,tier,color,pulse,comboSnap);
+      else paintBowC(x,color,pulse);
+    });
+
+    bowCache.set(key,bmp);
+
+  }
+
+  return bmp;
+
+}
+
+function blitBowLayer(bmp){
+  ctx.drawImage(bmp.c,-bmp.ox,-bmp.oy,bmp.w,bmp.h);
+}
+
+function getRingSprite(color){
+
+  const key=color+"|"+gameScale.toFixed(4)+"|"+curDpr;
+
+  let s=ringCache.get(key);
+
+  if(s)return s;
+
+  if(ringCache.size>40)ringCache.clear();
+
+  const g=gameScale;
+  const half=Math.ceil(40*g);
+
+  const c=document.createElement("canvas");
+
+  c.width=c.height=Math.ceil(half*2*curDpr);
+
+  const x=c.getContext("2d");
+
+  x.setTransform(curDpr,0,0,curDpr,half*curDpr,half*curDpr);
+
+  x.globalCompositeOperation="lighter";
+  x.strokeStyle=color;
+  x.shadowColor=color;
+  x.shadowBlur=14*g;
+  x.lineWidth=2*g;
+
+  x.beginPath();
+  x.ellipse(0,0,19*g,8*g,0,0,Math.PI*2);
+  x.stroke();
+
+  x.rotate(Math.PI/2);
+
+  x.beginPath();
+  x.ellipse(0,0,19*g,8*g,0,0,Math.PI*2);
+  x.stroke();
+
+  s={c,half,size:c.width/curDpr};
+
+  ringCache.set(key,s);
+
+  return s;
+
+}
+
+function warmBowCache(){
+
+  const tier=getBowTier();
+
+  if(tier<2)return;
+
+  const state=bowStateKey(tier);
+
+  if(state!==bowCacheState){
+    bowCache.clear();
+    bowCacheState=state;
+  }
+
+  for(let i=0;i<PULSE_STEPS;i++){
+
+    if(!bowCache.has("A"+i)){
+      getBowLayer("A",tier,i);
+      return;
+    }
+
+    if(tier>=7&&!bowCache.has("C"+i)){
+      getBowLayer("C",tier,i);
+      return;
+    }
+
+  }
+
+  if(tier>=6)getRingSprite(getBowColor());
 
 }
 
@@ -3312,923 +1597,157 @@ function draw(){
 /* =====================================================
    BOW DRAWING
 ===================================================== */
-
-function bowPath(
-  h,
-  curve,
-  extra
-){
-
-  ctx.beginPath();
-
-
-  ctx.moveTo(
-    0,
-    -h/2
-  );
-
-
-  ctx.quadraticCurveTo(
-    curve+extra,
-    0,
-    0,
-    h/2
-  );
-
-}
-
-
-function drawTips(
-  tierColor,
-  size,
-  blur
-){
-
-  const h=
-    getBowHeight();
-
-
-  for(
-    const tipY of[
-      -h/2,
-      h/2
-    ]
-  ){
-
-    ctx.save();
-
-
-    ctx.translate(
-      2*gameScale,
-      tipY
-    );
-
-
-    ctx.rotate(
-      Math.PI/4
-    );
-
-
-    ctx.fillStyle=
-      tierColor;
-
-
-    ctx.shadowColor=
-      tierColor;
-
-
-    ctx.shadowBlur=
-      blur*gameScale;
-
-
-    ctx.fillRect(
-      -size/2,
-      -size/2,
-      size,
-      size
-    );
-
-
-    ctx.restore();
-
-  }
-
-}
-
-
 function drawBow(){
 
-  const h=
-    getBowHeight();
-
-
-  const curve=
-    getBowCurve();
-
-
-  const pullDistance=
-    getPullDistance();
-
-
-  const g=
-    gameScale;
-
+  const h=getBowHeight();
+  const curve=getBowCurve();
+  const pullDistance=getPullDistance();
+  const g=gameScale;
 
   ctx.save();
 
+  ctx.translate(bow.x,bow.y);
+  ctx.rotate(bow.angle);
 
-  ctx.translate(
-    bow.x,
-    bow.y
-  );
+  const bowTier=getBowTier();
+  const tierColor=getBowColor();
 
-
-  ctx.rotate(
-    bow.angle
-  );
+  const pulse=1+Math.sin(now*.008)*.08;
+  const pi=pulseIdx(pulse);
 
 
-  const bowTier=
-    getBowTier();
+  /* TIER 1 - 4+ (cached glow layers) */
+  if(bowTier>=1){
+    blitBowLayer(getBowLayer("A",bowTier,bowTier>=2?pi:0));
+  }
 
 
-  const tierColor=
-    getBowColor();
+  /* TIER 6+ rotating rings (cached sprite, iniikot lang) */
+  if(bowTier>=6){
 
-
-  const pulse=
-    1+
-    Math.sin(now*.008)*
-    .08;
-
-
-  /* TIER 1 */
-
-  if(
-    bowTier>=1
-  ){
+    const rs=getRingSprite(tierColor);
 
     ctx.save();
 
-
-    ctx.globalCompositeOperation=
-      "lighter";
-
-
-    ctx.strokeStyle=
-      tierColor;
-
-
-    ctx.shadowColor=
-      tierColor;
-
-
-    ctx.shadowBlur=
-      5*g;
-
-
-    ctx.lineWidth=
-      8*g;
-
-
-    bowPath(
-      h,
-      curve,
-      12*g
-    );
-
-
-    ctx.stroke();
-
+    ctx.globalCompositeOperation="lighter";
+    ctx.rotate(now*.0012);
+    ctx.drawImage(rs.c,-rs.half,-rs.half,rs.size,rs.size);
 
     ctx.restore();
 
   }
 
 
-  /* TIER 2 */
-
-  if(
-    bowTier>=2
-  ){
-
-    ctx.save();
-
-
-    ctx.strokeStyle=
-      tierColor;
-
-
-    ctx.shadowColor=
-      tierColor;
-
-
-    ctx.shadowBlur=
-      12*g;
-
-
-    ctx.lineWidth=
-      3*g*pulse;
-
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-      4*g,
-      -h/2+7*g
-    );
-
-
-    ctx.quadraticCurveTo(
-      curve+4*g,
-      0,
-      4*g,
-      h/2-7*g
-    );
-
-
-    ctx.stroke();
-
-
-    ctx.restore();
-
-
-    drawTips(
-      tierColor,
-      7*g*pulse,
-      13
-    );
-
+  /* TIER 7 pulsing circle (cached) */
+  if(bowTier>=7){
+    blitBowLayer(getBowLayer("C",bowTier,pi));
   }
 
 
-  /* TIER 3 */
-
-  if(
-    bowTier>=3
-  ){
-
-    ctx.save();
-
-
-    ctx.globalCompositeOperation=
-      "lighter";
-
-
-    ctx.strokeStyle=
-      tierColor;
-
-
-    ctx.shadowColor=
-      tierColor;
-
-
-    ctx.shadowBlur=
-      9*g;
-
-
-    ctx.lineWidth=
-      2*g;
-
-
-    for(
-      const o of[-7,7]
-    ){
-
-      ctx.beginPath();
-
-
-      ctx.moveTo(
-        o*g,
-        -h*.42
-      );
-
-
-      ctx.quadraticCurveTo(
-        (curve+o*.35)*g,
-        0,
-        o*g,
-        h*.42
-      );
-
-
-      ctx.stroke();
-
-    }
-
-
-    ctx.restore();
-
-  }
-
-
-  /* TIER 4+ */
-
-  if(
-    bowTier>=4
-  ){
-
-    const vipColor=
-      tierColor;
-
-
-    const vipGlow=
-      10+
-      Math.min(
-        combo-18,
-        30
-      )*.35;
-
-
-    ctx.save();
-
-
-    ctx.globalCompositeOperation=
-      "lighter";
-
-
-    ctx.strokeStyle=
-      vipColor;
-
-
-    ctx.shadowColor=
-      vipColor;
-
-
-    ctx.shadowBlur=
-      vipGlow*g;
-
-
-    ctx.lineWidth=
-      9*g*pulse;
-
-
-    ctx.lineCap=
-      "round";
-
-
-    bowPath(
-      h,
-      curve,
-      10*g
-    );
-
-
-    ctx.stroke();
-
-
-    ctx.restore();
-
-
-    ctx.save();
-
-
-    ctx.strokeStyle=
-      vipColor;
-
-
-    ctx.shadowColor=
-      vipColor;
-
-
-    ctx.shadowBlur=
-      5*g;
-
-
-    ctx.lineWidth=
-      Math.max(
-        2,
-        2.5*g
-      );
-
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-      5*g,
-      -h/2+9*g
-    );
-
-
-    ctx.quadraticCurveTo(
-      curve-5*g,
-      0,
-      5*g,
-      h/2-9*g
-    );
-
-
-    ctx.stroke();
-
-
-    ctx.restore();
-
-
-    drawTips(
-      vipColor,
-      8*g,
-      12
-    );
-
-
-    ctx.save();
-
-
-    ctx.fillStyle=
-      vipColor;
-
-
-    ctx.shadowColor=
-      vipColor;
-
-
-    ctx.shadowBlur=
-      14*g;
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-      0,
-      0,
-      7*g,
-      0,
-      Math.PI*2
-    );
-
-
-    ctx.fill();
-
-
-    ctx.fillStyle=
-      "#fff";
-
-
-    ctx.shadowBlur=0;
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-      0,
-      0,
-      2.2*g,
-      0,
-      Math.PI*2
-    );
-
-
-    ctx.fill();
-
-
-    ctx.restore();
-
-
-    if(
-      bowTier>=6
-    ){
-
-      ctx.save();
-
-
-      ctx.globalCompositeOperation=
-        "lighter";
-
-
-      ctx.rotate(
-        now*.0012
-      );
-
-
-      ctx.strokeStyle=
-        vipColor;
-
-
-      ctx.shadowColor=
-        vipColor;
-
-
-      ctx.shadowBlur=
-        14*g;
-
-
-      ctx.lineWidth=
-        2*g;
-
-
-      ctx.beginPath();
-
-
-      ctx.ellipse(
-        0,
-        0,
-        19*g,
-        8*g,
-        0,
-        0,
-        Math.PI*2
-      );
-
-
-      ctx.stroke();
-
-
-      ctx.rotate(
-        Math.PI/2
-      );
-
-
-      ctx.beginPath();
-
-
-      ctx.ellipse(
-        0,
-        0,
-        19*g,
-        8*g,
-        0,
-        0,
-        Math.PI*2
-      );
-
-
-      ctx.stroke();
-
-
-      ctx.restore();
-
-    }
-
-
-    if(
-      bowTier>=7
-    ){
-
-      ctx.save();
-
-
-      ctx.globalCompositeOperation=
-        "lighter";
-
-
-      ctx.strokeStyle=
-        vipColor;
-
-
-      ctx.shadowColor=
-        vipColor;
-
-
-      ctx.shadowBlur=
-        24*g;
-
-
-      ctx.lineWidth=
-        3*g;
-
-
-      ctx.beginPath();
-
-
-      ctx.arc(
-        0,
-        0,
-        14*g*pulse,
-        0,
-        Math.PI*2
-      );
-
-
-      ctx.stroke();
-
-
-      ctx.restore();
-
-    }
-
-  }
-
-
-  /* BASIC BOW */
-
-  bowPath(
-    h,
-    curve,
-    10*g
-  );
-
-
-  ctx.strokeStyle=
-    tierColor;
-
-
-  ctx.lineWidth=
-    Math.max(
-      2.5,
-      5*g
-    );
-
-
-  ctx.lineCap=
-    "round";
-
-
+  /* BASIC BOW (live, walang shadow kaya mura) */
+  bowPath(ctx,h,curve,10*g);
+
+  ctx.strokeStyle=tierColor;
+  ctx.lineWidth=Math.max(2.5,5*g);
+  ctx.lineCap="round";
   ctx.stroke();
 
 
   /* STRING */
-
   ctx.beginPath();
+  ctx.moveTo(0,-h/2);
+  ctx.lineTo(-pullDistance,0);
+  ctx.lineTo(0,h/2);
 
+  const bowColor=tierColor;
 
-  ctx.moveTo(
-    0,
-    -h/2
-  );
-
-
-  ctx.lineTo(
-    -pullDistance,
-    0
-  );
-
-
-  ctx.lineTo(
-    0,
-    h/2
-  );
-
-
-  const bowColor=
-    tierColor;
-
-
-  if(
-    combo>=6
-  ){
-
-    ctx.strokeStyle=
-      bowColor;
-
-
-    ctx.shadowBlur=
-      8*g;
-
-
-    ctx.shadowColor=
-      bowColor;
-
+  if(combo>=6){
+    ctx.strokeStyle=bowColor;
+    ctx.shadowBlur=8*g;
+    ctx.shadowColor=bowColor;
   }else{
-
-    ctx.strokeStyle=
-      "#aaa";
-
-
+    ctx.strokeStyle="#aaa";
     ctx.shadowBlur=0;
-
   }
 
-
-  ctx.lineWidth=
-    Math.max(
-      1,
-      2*g
-    );
-
-
+  ctx.lineWidth=Math.max(1,2*g);
   ctx.stroke();
-
 
   ctx.shadowBlur=0;
 
 
   /* STRING FIRE */
+  if(combo>=6){
 
-  if(
-    combo>=6
-  ){
+    const sf=.78+Math.min(combo-6,30)*.018;
 
-    const sf=
-      .78+
-      Math.min(
-        combo-6,
-        30
-      )*.018;
-
-
-    drawFire(
-      -pullDistance*.30,
-      h*.35,
-      sf*.58,
-      g*.42
-    );
-
-
-    drawFire(
-      -pullDistance*.58,
-      h*.21,
-      sf*.68,
-      g*.48
-    );
-
-
-    drawFire(
-      -pullDistance*.80,
-      h*.10,
-      sf*.58,
-      g*.40
-    );
+    drawFire(-pullDistance*.30,h*.35,sf*.58,g*.42);
+    drawFire(-pullDistance*.58,h*.21,sf*.68,g*.48);
+    drawFire(-pullDistance*.80,h*.10,sf*.58,g*.40);
 
   }
 
 
   /* AIMING ARROW */
-
-  if(
-    dragging &&
-    power>.01
-  ){
+  if(dragging&&power>.01){
 
     ctx.save();
 
+    ctx.translate(-pullDistance,0);
 
-    ctx.translate(
-      -pullDistance,
-      0
-    );
-
-
-    const len=
-      88*g;
-
-
-    const head=
-      13*g;
-
-
-    const feather=
-      17*g;
-
+    const len=88*g;
+    const head=13*g;
+    const feather=17*g;
 
     ctx.save();
-
 
     ctx.globalAlpha=.25;
-
-
-    ctx.shadowColor=
-      bowColor;
-
-
-    ctx.shadowBlur=
-      8*g;
-
-
-    ctx.strokeStyle=
-      bowColor;
-
-
-    ctx.lineWidth=
-      1.5*g;
-
+    ctx.shadowColor=bowColor;
+    ctx.shadowBlur=8*g;
+    ctx.strokeStyle=bowColor;
+    ctx.lineWidth=1.5*g;
 
     ctx.beginPath();
-
-
-    ctx.moveTo(
-      0,
-      0
-    );
-
-
-    ctx.lineTo(
-      len,
-      0
-    );
-
-
+    ctx.moveTo(0,0);
+    ctx.lineTo(len,0);
     ctx.stroke();
-
 
     ctx.restore();
 
-
     /* SHAFT */
-
-    ctx.strokeStyle=
-      bowColor;
-
-
-    ctx.lineWidth=
-      Math.max(
-        1,
-        2*g
-      );
-
+    ctx.strokeStyle=bowColor;
+    ctx.lineWidth=Math.max(1,2*g);
 
     ctx.beginPath();
-
-
-    ctx.moveTo(
-      -8*g,
-      0
-    );
-
-
-    ctx.lineTo(
-      len,
-      0
-    );
-
-
+    ctx.moveTo(-8*g,0);
+    ctx.lineTo(len,0);
     ctx.stroke();
-
 
     /* HEAD */
-
     ctx.beginPath();
-
-
-    ctx.moveTo(
-      len,
-      0
-    );
-
-
-    ctx.lineTo(
-      len-head,
-      -6*g
-    );
-
-
-    ctx.moveTo(
-      len,
-      0
-    );
-
-
-    ctx.lineTo(
-      len-head,
-      6*g
-    );
-
-
+    ctx.moveTo(len,0);
+    ctx.lineTo(len-head,-6*g);
+    ctx.moveTo(len,0);
+    ctx.lineTo(len-head,6*g);
     ctx.stroke();
-
 
     /* FEATHERS */
-
     ctx.beginPath();
-
-
-    ctx.moveTo(
-      7*g,
-      0
-    );
-
-
-    ctx.lineTo(
-      -feather,
-      -6*g
-    );
-
-
-    ctx.moveTo(
-      7*g,
-      0
-    );
-
-
-    ctx.lineTo(
-      -feather,
-      6*g
-    );
-
-
+    ctx.moveTo(7*g,0);
+    ctx.lineTo(-feather,-6*g);
+    ctx.moveTo(7*g,0);
+    ctx.lineTo(-feather,6*g);
     ctx.stroke();
 
+    if(combo>=6){
 
-    if(
-      combo>=6
-    ){
+      const af=.85+Math.min(combo-6,30)*.025;
 
-      const af=
-        .85+
-        Math.min(
-          combo-6,
-          30
-        )*.025;
-
-
-      drawFire(
-        len*.62,
-        0,
-        af*.62,
-        g*.48
-      );
-
-
-      drawFire(
-        len*.18,
-        0,
-        af*.48,
-        g*.38
-      );
-
-
-      drawFire(
-        -6*g,
-        0,
-        af*.58,
-        g*.42
-      );
+      drawFire(len*.62,0,af*.62,g*.48);
+      drawFire(len*.18,0,af*.48,g*.38);
+      drawFire(-6*g,0,af*.58,g*.42);
 
     }
-
 
     ctx.restore();
 
@@ -4236,44 +1755,15 @@ function drawBow(){
 
 
   /* FIRE MODE */
+  if(combo>=6){
 
-  if(
-    combo>=6
-  ){
+    const fp=.85+Math.min(combo-6,30)*.025;
 
-    const fp=
-      .85+
-      Math.min(
-        combo-6,
-        30
-      )*.025;
-
-
-    drawFire(
-      2*g,
-      -h/2,
-      fp,
-      g*.72
-    );
-
-
-    drawFire(
-      2*g,
-      h/2,
-      fp,
-      g*.72
-    );
-
-
-    drawFire(
-      -pullDistance,
-      0,
-      fp+.1,
-      g
-    );
+    drawFire(2*g,-h/2,fp,g*.72);
+    drawFire(2*g,h/2,fp,g*.72);
+    drawFire(-pullDistance,0,fp+.1,g);
 
   }
-
 
   ctx.restore();
 
@@ -4283,368 +1773,128 @@ function drawBow(){
 /* =====================================================
    AIM GUIDE
 ===================================================== */
-
 function drawAimGuide(){
 
-  if(
-    !dragging ||
-    power<=.05
-  ){
+  if(!dragging||power<=.05)return;
 
-    return;
+  const g=gameScale;
+  const angle=bow.angle;
+  const speed=arrowSpeed(power);
+  const gravity=180*g;
 
-  }
+  const startX=bow.x;
+  const startY=bow.y;
 
+  const tr=getTargetRadius();
 
-  const g=
-    gameScale;
+  const cosA=Math.cos(angle);
+  const sinA=Math.sin(angle);
 
-
-  const angle=
-    bow.angle;
-
-
-  const speed=
-    arrowSpeed(power);
-
-
-  const gravity=
-    180*g;
-
-
-  const startX=
-    bow.x;
-
-
-  const startY=
-    bow.y;
-
-
-  const tr=
-    getTargetRadius();
-
-
-  const px=
-    t=>
-      startX+
-      Math.cos(angle)*
-      speed*t;
-
-
-  const py=
-    t=>
-      startY+
-      Math.sin(angle)*
-      speed*t+
-      .5*gravity*t*t;
-
+  const px=t=>startX+cosA*speed*t;
+  const py=t=>startY+sinA*speed*t+.5*gravity*t*t;
 
   let hitX=null;
-
   let hitY=null;
 
+  let previewX=startX;
+  let previewY=startY;
 
-  let previewX=
-    startX;
+  for(let t=.05;t<=2.8;t+=.035){
 
-  let previewY=
-    startY;
-
-
-  for(
-    let t=.05;
-    t<=2.8;
-    t+=.035
-  ){
-
-    const x=
-      px(t);
-
-    const y=
-      py(t);
-
+    const x=px(t);
+    const y=py(t);
 
     previewX=x;
-
     previewY=y;
 
+    const dx=x-target.x;
+    const dy=y-target.y;
 
-    const dx=
-      x-target.x;
-
-    const dy=
-      y-target.y;
-
-
-    if(
-      hitX===null &&
-      dx*dx+
-      dy*dy<=
-      tr*tr
-    ){
-
+    if(hitX===null&&dx*dx+dy*dy<=tr*tr){
       hitX=x;
-
       hitY=y;
-
       break;
-
     }
 
-
-    if(
-      x>W+100 ||
-      y>H+100 ||
-      y<-H
-    ){
-
-      break;
-
-    }
+    if(x>W+100||y>H+100||y<-H)break;
 
   }
 
+  const aimX=hitX!==null?hitX:previewX;
+  const aimY=hitY!==null?hitY:previewY;
 
-  const aimX=
-    hitX!==null
-      ?hitX
-      :previewX;
+  const dist=Math.hypot(aimX-target.x,aimY-target.y);
 
+  if(dist<getTargetRadius()*2)return;
 
-  const aimY=
-    hitY!==null
-      ?hitY
-      :previewY;
-
-
-  const dist=
-    Math.hypot(
-      aimX-target.x,
-      aimY-target.y
-    );
-
-
-  if(
-    dist<
-    getTargetRadius()*2
-  ){
-
-    return;
-
-  }
-
-
-  const color=
-    getBowColor();
-
-
-  const r=
-    Math.max(
-      9,
-      12*g
-    );
-
+  const color=getBowColor();
+  const r=Math.max(9,12*g);
 
   ctx.save();
 
-
-  ctx.fillStyle=
-    color;
-
-
+  ctx.fillStyle=color;
   ctx.globalAlpha=.07;
+  ctx.shadowBlur=3*g;
+  ctx.shadowColor=color;
 
+  /* PATH DOTS - isang path, isang fill (dati: fill + shadow bawat tuldok) */
+  const dr=Math.max(1.2,2.2*g);
 
-  ctx.shadowBlur=
-    3*g;
+  ctx.beginPath();
 
+  for(let t=.08;t<=1.2;t+=.08){
 
-  ctx.shadowColor=
-    color;
+    const x=px(t);
+    const y=py(t);
 
+    if(x>W+20||y>H+20||y<-20)break;
 
-  /* PATH DOTS */
-
-  for(
-    let t=.08;
-    t<=1.2;
-    t+=.08
-  ){
-
-    const x=
-      px(t);
-
-    const y=
-      py(t);
-
-
-    if(
-      x>W+20 ||
-      y>H+20 ||
-      y<-20
-    ){
-
-      break;
-
-    }
-
-
-    ctx.beginPath();
-
-
-    ctx.arc(
-      x,
-      y,
-      Math.max(
-        1.2,
-        2.2*g
-      ),
-      0,
-      Math.PI*2
-    );
-
-
-    ctx.fill();
+    ctx.moveTo(x+dr,y);
+    ctx.arc(x,y,dr,0,Math.PI*2);
 
   }
 
-
-  /* AIM CIRCLE */
-
-  ctx.strokeStyle=
-    color;
-
-
-  ctx.lineWidth=
-    Math.max(
-      1,
-      1.3*g
-    );
-
-
-  ctx.shadowBlur=
-    4*g;
-
-
-  ctx.beginPath();
-
-
-  ctx.arc(
-    aimX,
-    aimY,
-    r,
-    0,
-    Math.PI*2
-  );
-
-
-  ctx.stroke();
-
-
-  /* CROSSHAIR */
-
-  ctx.beginPath();
-
-
-  ctx.moveTo(
-    aimX-r*1.8,
-    aimY
-  );
-
-
-  ctx.lineTo(
-    aimX-r*.65,
-    aimY
-  );
-
-
-  ctx.moveTo(
-    aimX+r*.65,
-    aimY
-  );
-
-
-  ctx.lineTo(
-    aimX+r*1.8,
-    aimY
-  );
-
-
-  ctx.moveTo(
-    aimX,
-    aimY-r*1.8
-  );
-
-
-  ctx.lineTo(
-    aimX,
-    aimY-r*.65
-  );
-
-
-  ctx.moveTo(
-    aimX,
-    aimY+r*.65
-  );
-
-
-  ctx.lineTo(
-    aimX,
-    aimY+r*1.8
-  );
-
-
-  ctx.stroke();
-
-
-  /* CENTER */
-
-  ctx.fillStyle=
-    color;
-
-
-  ctx.beginPath();
-
-
-  ctx.arc(
-    aimX,
-    aimY,
-    Math.max(
-      2,
-      3*g
-    ),
-    0,
-    Math.PI*2
-  );
-
-
   ctx.fill();
 
+  /* AIM CIRCLE */
+  ctx.strokeStyle=color;
+  ctx.lineWidth=Math.max(1,1.3*g);
+  ctx.shadowBlur=4*g;
+
+  ctx.beginPath();
+  ctx.arc(aimX,aimY,r,0,Math.PI*2);
+  ctx.stroke();
+
+  /* CROSSHAIR */
+  ctx.beginPath();
+
+  ctx.moveTo(aimX-r*1.8,aimY);
+  ctx.lineTo(aimX-r*.65,aimY);
+
+  ctx.moveTo(aimX+r*.65,aimY);
+  ctx.lineTo(aimX+r*1.8,aimY);
+
+  ctx.moveTo(aimX,aimY-r*1.8);
+  ctx.lineTo(aimX,aimY-r*.65);
+
+  ctx.moveTo(aimX,aimY+r*.65);
+  ctx.lineTo(aimX,aimY+r*1.8);
+
+  ctx.stroke();
+
+  /* CENTER */
+  ctx.fillStyle=color;
+
+  ctx.beginPath();
+  ctx.arc(aimX,aimY,Math.max(2,3*g),0,Math.PI*2);
+  ctx.fill();
 
   ctx.shadowBlur=0;
 
+  ctx.font=`bold ${Math.max(8,10*g)}px Arial`;
+  ctx.textAlign="center";
 
-  ctx.font=
-    `bold ${
-      Math.max(
-        8,
-        10*g
-      )
-    }px Arial`;
-
-
-  ctx.textAlign=
-    "center";
-
-
-  ctx.fillText(
-    hitX!==null
-      ?"AIM"
-      :"PATH",
-    aimX,
-    aimY-r*2.4
-  );
-
+  ctx.fillText(hitX!==null?"AIM":"PATH",aimX,aimY-r*2.4);
 
   ctx.restore();
 
@@ -4654,179 +1904,70 @@ function drawAimGuide(){
 /* =====================================================
    FIRE SPRITE
 ===================================================== */
-
 const FIRE_F0=40;
-
 const FIRE_C=100;
 
-const fireSprites=
-  new Map();
-
+const fireSprites=new Map();
 
 function getFireSprite(color){
 
-  let c=
-    fireSprites.get(color);
+  let c=fireSprites.get(color);
 
+  if(c)return c;
 
-  if(c)
-    return c;
+  c=document.createElement("canvas");
 
+  c.width=c.height=200;
 
-  c=
-    document.createElement(
-      "canvas"
-    );
+  const g=c.getContext("2d");
 
+  const F=FIRE_F0;
 
-  c.width=
-    c.height=
-    200;
+  g.translate(FIRE_C,FIRE_C);
 
-
-  const g=
-    c.getContext("2d");
-
-
-  const F=
-    FIRE_F0;
-
-
-  g.translate(
-    FIRE_C,
-    FIRE_C
-  );
-
-
-  g.shadowBlur=
-    18*F/16;
-
-
-  g.shadowColor=
-    color;
-
+  g.shadowBlur=18*F/16;
+  g.shadowColor=color;
 
   g.beginPath();
+  g.moveTo(0,F);
+  g.quadraticCurveTo(-F*.85,F*.15,-F*.25,-F*.55);
+  g.quadraticCurveTo(0,-F*1.15,F*.25,-F*.55);
+  g.quadraticCurveTo(F*.85,F*.15,0,F);
 
-
-  g.moveTo(
-    0,
-    F
-  );
-
-
-  g.quadraticCurveTo(
-    -F*.85,
-    F*.15,
-    -F*.25,
-    -F*.55
-  );
-
-
-  g.quadraticCurveTo(
-    0,
-    -F*1.15,
-    F*.25,
-    -F*.55
-  );
-
-
-  g.quadraticCurveTo(
-    F*.85,
-    F*.15,
-    0,
-    F
-  );
-
-
-  g.fillStyle=
-    color;
-
-
+  g.fillStyle=color;
   g.fill();
 
-
-  g.shadowBlur=
-    F*.5;
-
+  g.shadowBlur=F*.5;
 
   g.beginPath();
+  g.moveTo(0,F*.72);
+  g.quadraticCurveTo(-F*.4,F*.15,0,-F*.45);
+  g.quadraticCurveTo(F*.4,F*.15,0,F*.72);
 
-
-  g.moveTo(
-    0,
-    F*.72
-  );
-
-
-  g.quadraticCurveTo(
-    -F*.4,
-    F*.15,
-    0,
-    -F*.45
-  );
-
-
-  g.quadraticCurveTo(
-    F*.4,
-    F*.15,
-    0,
-    F*.72
-  );
-
-
-  g.fillStyle=
-    "#fff";
-
-
+  g.fillStyle="#fff";
   g.fill();
 
-
-  fireSprites.set(
-    color,
-    c
-  );
-
+  fireSprites.set(color,c);
 
   return c;
 
 }
 
+function drawFire(x,y,intensity=1,scale=1){
 
-function drawFire(
-  x,
-  y,
-  intensity=1,
-  scale=1
-){
-
-  const k=
-    (
-      16+
-      Math.sin(now*.012)*3
-    )*
-    scale*
-    intensity/
-    FIRE_F0;
-
+  const k=(16+Math.sin(now*.012)*3)*scale*intensity/FIRE_F0;
 
   ctx.save();
 
-
-  ctx.globalCompositeOperation=
-    "lighter";
-
+  ctx.globalCompositeOperation="lighter";
 
   ctx.drawImage(
-    getFireSprite(
-      getBowColor()
-    ),
+    getFireSprite(getBowColor()),
     x-FIRE_C*k,
     y-FIRE_C*k,
     200*k,
     200*k
   );
-
 
   ctx.restore();
 
@@ -4836,44 +1977,23 @@ function drawFire(
 /* =====================================================
    TARGET
 ===================================================== */
+const TARGET_RINGS=[
+  [1,"#e00000"],
+  [.72,"#fff"],
+  [.49,"#e00000"],
+  [.27,"#fff"],
+  [.14,"#e00000"]
+];
 
 function drawTarget(){
 
-  const r=
-    getTargetRadius();
+  const r=getTargetRadius();
 
-
-  const rings=[
-
-    [1,"#e00000"],
-    [.72,"#fff"],
-    [.49,"#e00000"],
-    [.27,"#fff"],
-    [.14,"#e00000"]
-
-  ];
-
-
-  for(
-    const[k,col]of rings
-  ){
+  for(let i=0;i<TARGET_RINGS.length;i++){
 
     ctx.beginPath();
-
-
-    ctx.arc(
-      target.x,
-      target.y,
-      r*k,
-      0,
-      Math.PI*2
-    );
-
-
-    ctx.fillStyle=
-      col;
-
-
+    ctx.arc(target.x,target.y,r*TARGET_RINGS[i][0],0,Math.PI*2);
+    ctx.fillStyle=TARGET_RINGS[i][1];
     ctx.fill();
 
   }
@@ -4884,145 +2004,44 @@ function drawTarget(){
 /* =====================================================
    ARROW
 ===================================================== */
-
 function drawArrow(arrow){
 
-  const g=
-    gameScale;
+  const g=gameScale;
+  const head=13*g;
+  const feather=7*g;
 
-
-  const head=
-    13*g;
-
-
-  const feather=
-    7*g;
-
-
-  const color=
-    getBowColor();
-
+  const color=getBowColor();
 
   ctx.save();
 
+  ctx.translate(arrow.x,arrow.y);
+  ctx.rotate(arrow.rotation);
 
-  ctx.translate(
-    arrow.x,
-    arrow.y
-  );
-
-
-  ctx.rotate(
-    arrow.rotation
-  );
-
-
-  ctx.strokeStyle=
-    color;
-
-
-  ctx.lineWidth=
-    Math.max(
-      1,
-      2*g
-    );
-
+  ctx.strokeStyle=color;
+  ctx.lineWidth=Math.max(1,2*g);
 
   ctx.beginPath();
-
-
-  ctx.moveTo(
-    0,
-    0
-  );
-
-
-  ctx.lineTo(
-    arrow.length,
-    0
-  );
-
-
+  ctx.moveTo(0,0);
+  ctx.lineTo(arrow.length,0);
   ctx.stroke();
-
 
   ctx.beginPath();
-
-
-  ctx.moveTo(
-    arrow.length,
-    0
-  );
-
-
-  ctx.lineTo(
-    arrow.length-head,
-    -6*g
-  );
-
-
-  ctx.moveTo(
-    arrow.length,
-    0
-  );
-
-
-  ctx.lineTo(
-    arrow.length-head,
-    6*g
-  );
-
-
+  ctx.moveTo(arrow.length,0);
+  ctx.lineTo(arrow.length-head,-6*g);
+  ctx.moveTo(arrow.length,0);
+  ctx.lineTo(arrow.length-head,6*g);
   ctx.stroke();
-
 
   ctx.beginPath();
-
-
-  ctx.moveTo(
-    7*g,
-    0
-  );
-
-
-  ctx.lineTo(
-    -feather,
-    -6*g
-  );
-
-
-  ctx.moveTo(
-    7*g,
-    0
-  );
-
-
-  ctx.lineTo(
-    -feather,
-    6*g
-  );
-
-
+  ctx.moveTo(7*g,0);
+  ctx.lineTo(-feather,-6*g);
+  ctx.moveTo(7*g,0);
+  ctx.lineTo(-feather,6*g);
   ctx.stroke();
 
-
-  if(
-    combo>=6
-  ){
-
-    drawFire(
-      8*g,
-      0,
-      .75+
-      Math.min(
-        combo-6,
-        30
-      )*.02,
-      g*.75
-    );
-
+  if(combo>=6){
+    drawFire(8*g,0,.75+Math.min(combo-6,30)*.02,g*.75);
   }
-
 
   ctx.restore();
 
@@ -5032,101 +2051,40 @@ function drawArrow(arrow){
 /* =====================================================
    HIT
 ===================================================== */
-
 function hitTarget(){
 
   combo++;
 
-
-  if(
-    combo>highestCombo
-  ){
-
-    highestCombo=
-      combo;
-
+  if(combo>highestCombo){
+    highestCombo=combo;
   }
-
 
   updateComboHud(true);
 
-
-  if(
-    combo>=MOVE_COMBO
-  ){
-
-    targetMoveActive=
-      true;
-
+  if(combo>=MOVE_COMBO){
+    targetMoveActive=true;
   }
-
 
   playHitSound();
 
-
-  /*
-     Normal hit particles.
-  */
-
-  for(
-    let i=0;
-    i<12;
-    i++
-  ){
+  for(let i=0;i<12;i++){
 
     hearts.push({
-
       x:target.x,
-
       y:target.y,
-
-      vx:
-        (Math.random()-.5)*
-        180,
-
-      vy:
-        -180-
-        Math.random()*220,
-
+      vx:(Math.random()-.5)*180,
+      vy:-180-Math.random()*220,
       life:.55,
-
-      size:
-        8+
-        Math.random()*8
-
+      size:8+Math.random()*8
     });
 
   }
 
-
-  /*
-     Random HP pickup.
-  */
-
   spawnHealthHeart();
 
+  showMessage(pickPraise(),"love",2000);
 
-  showMessage(
-    pickPraise(),
-    "love",
-    2000
-  );
-
-
-  /*
-     Target movement.
-
-     Hindi kone-connect sa HP heart.
-     Dahil random na ang heart,
-     puwedeng gumalaw ang target normally.
-  */
-
-  setTimeout(
-    ()=>{
-      moveTarget(true);
-    },
-    500
-  );
+  setTimeout(()=>{moveTarget(true)},500);
 
 }
 
@@ -5134,56 +2092,20 @@ function hitTarget(){
 /* =====================================================
    MESSAGE
 ===================================================== */
+function showMessage(text,type,duration){
 
-function showMessage(
-  text,
-  type,
-  duration
-){
+  clearTimeout(messageTimer);
 
-  clearTimeout(
-    messageTimer
-  );
+  messageMain.textContent=text;
 
-
-  messageMain.textContent=
-    text;
-
-
-  message.classList.remove(
-    "show",
-    "miss",
-    "love"
-  );
-
-
-  message.classList.add(
-    type
-  );
-
+  message.classList.remove("show","miss","love");
+  message.classList.add(type);
 
   void message.offsetWidth;
 
+  setTimeout(()=>{message.classList.add("show")},30);
 
-  setTimeout(
-    ()=>{
-      message.classList.add(
-        "show"
-      );
-    },
-    30
-  );
-
-
-  messageTimer=
-    setTimeout(
-      ()=>{
-        message.classList.remove(
-          "show"
-        );
-      },
-      duration
-    );
+  messageTimer=setTimeout(()=>{message.classList.remove("show")},duration);
 
 }
 
@@ -5191,86 +2113,43 @@ function showMessage(
 /* =====================================================
    PARTICLES
 ===================================================== */
-
 function updateParticles(dt){
 
-  for(
-    let i=particles.length-1;
-    i>=0;
-    i--
-  ){
+  for(let i=particles.length-1;i>=0;i--){
 
-    const p=
-      particles[i];
+    const p=particles[i];
 
-
-    p.x+=
-      p.vx*dt;
-
-
-    p.y+=
-      p.vy*dt;
-
-
-    p.vy+=
-      120*dt;
-
-
+    p.x+=p.vx*dt;
+    p.y+=p.vy*dt;
+    p.vy+=120*dt;
     p.life-=dt;
 
-
-    if(
-      p.life<=0
-    ){
-
-      particles[i]=
-        particles[
-          particles.length-1
-        ];
-
-
+    if(p.life<=0){
+      particles[i]=particles[particles.length-1];
       particles.pop();
-
     }
 
   }
 
 }
 
-
 function drawParticles(){
 
-  for(
-    const p of particles
-  ){
+  if(particles.length===0)return;
 
-    ctx.globalAlpha=
-      Math.max(
-        0,
-        p.life
-      );
+  ctx.fillStyle="#fff";
 
+  for(let i=0;i<particles.length;i++){
+
+    const p=particles[i];
+
+    ctx.globalAlpha=Math.max(0,p.life);
 
     ctx.beginPath();
-
-
-    ctx.arc(
-      p.x,
-      p.y,
-      p.size*gameScale,
-      0,
-      Math.PI*2
-    );
-
-
-    ctx.fillStyle=
-      "#fff";
-
-
+    ctx.arc(p.x,p.y,p.size*gameScale,0,Math.PI*2);
     ctx.fill();
 
   }
-
 
   ctx.globalAlpha=1;
 
@@ -5280,136 +2159,64 @@ function drawParticles(){
 /* =====================================================
    HIT HEART PARTICLES
 ===================================================== */
-
 function updateHearts(dt){
 
-  for(
-    let i=hearts.length-1;
-    i>=0;
-    i--
-  ){
+  for(let i=hearts.length-1;i>=0;i--){
 
-    const h=
-      hearts[i];
+    const h=hearts[i];
 
-
-    h.x+=
-      h.vx*dt;
-
-
-    h.y+=
-      h.vy*dt;
-
-
-    h.vy+=
-      35*dt;
-
-
+    h.x+=h.vx*dt;
+    h.y+=h.vy*dt;
+    h.vy+=35*dt;
     h.life-=dt;
 
-
-    if(
-      h.life<=0
-    ){
-
-      hearts[i]=
-        hearts[
-          hearts.length-1
-        ];
-
-
+    if(h.life<=0){
+      hearts[i]=hearts[hearts.length-1];
       hearts.pop();
-
     }
 
   }
 
 }
 
-
 let heartSprite=null;
-
 
 function getHeartSprite(){
 
-  if(
-    heartSprite
-  )
-    return heartSprite;
+  if(heartSprite)return heartSprite;
 
+  heartSprite=document.createElement("canvas");
 
-  heartSprite=
-    document.createElement(
-      "canvas"
-    );
+  heartSprite.width=heartSprite.height=64;
 
+  const g=heartSprite.getContext("2d");
 
-  heartSprite.width=
-    heartSprite.height=
-    64;
-
-
-  const g=
-    heartSprite.getContext("2d");
-
-
-  g.font=
-    "40px Arial";
-
-
-  g.fillStyle=
-    "#ff4b18";
-
-
-  g.textAlign=
-    "center";
-
-
-  g.fillText(
-    "♥",
-    32,
-    48
-  );
-
+  g.font="40px Arial";
+  g.fillStyle="#ff4b18";
+  g.textAlign="center";
+  g.fillText("♥",32,48);
 
   return heartSprite;
 
 }
 
-
 function drawHearts(){
 
-  const s=
-    getHeartSprite();
+  if(hearts.length===0)return;
 
+  const s=getHeartSprite();
 
-  for(
-    const h of hearts
-  ){
+  for(let i=0;i<hearts.length;i++){
 
-    const k=
-      h.size*
-      gameScale/
-      40;
+    const h=hearts[i];
 
+    const k=h.size*gameScale/40;
 
-    ctx.globalAlpha=
-      Math.max(
-        0,
-        h.life
-      );
+    ctx.globalAlpha=Math.max(0,h.life);
 
-
-    ctx.drawImage(
-      s,
-      h.x-32*k,
-      h.y-48*k,
-      64*k,
-      64*k
-    );
+    ctx.drawImage(s,h.x-32*k,h.y-48*k,64*k,64*k);
 
   }
-
 
   ctx.globalAlpha=1;
 
@@ -5419,35 +2226,20 @@ function drawHearts(){
 /* =====================================================
    CLAMP
 ===================================================== */
-
-function clamp(
-  v,
-  min,
-  max
-){
-
-  return Math.max(
-    min,
-    Math.min(
-      max,
-      v
-    )
-  );
-
+function clamp(v,min,max){
+  return Math.max(min,Math.min(max,v));
 }
 
 
 /* =====================================================
    INIT
 ===================================================== */
-
 updateLives();
 
 bootLandscape();
 
-requestAnimationFrame(
-  update
-); 
+requestAnimationFrame(update);
+
 </script>
 
 </body>
