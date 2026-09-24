@@ -396,6 +396,21 @@ function moveTarget(randomize=true){
     target.ny=.20+Math.random()*.58;
   }
 
+  if(randomize&&healthHeart){
+
+    const clearance=(getTargetRadius()+healthHeart.radius)*1.4;
+
+    for(let i=0;i<20;i++){
+
+      if(Math.hypot(target.nx*W-healthHeart.x,target.ny*H-healthHeart.y)>clearance)break;
+
+      target.nx=.70+Math.random()*.22;
+      target.ny=.20+Math.random()*.58;
+
+    }
+
+  }
+
   target.baseX=target.nx*W;
   target.baseY=target.ny*H;
   target.x=target.baseX;
@@ -427,8 +442,13 @@ let highestCombo=0;
 const MAX_LIVES=3;
 let lives=MAX_LIVES;
 
-const HEALTH_HEART_LIFETIME=30;
-const HEALTH_HEART_CHANCE=.20;
+const HEALTH_HEART_LIFETIME=10;
+const HEALTH_HEART_CHANCE=.30;
+
+/* minimum na bilang ng hits bago puwedeng lumabas ulit ang heart
+   (para hindi mukhang unli life kahit swertehin sa random) */
+const HEALTH_HEART_COOLDOWN_HITS=4;
+let hitsSinceHeart=HEALTH_HEART_COOLDOWN_HITS;
 
 let comboTargetTime=0;
 let targetMoveActive=false;
@@ -586,19 +606,25 @@ function handleMiss(){
 ===================================================== */
 function getRandomHealthPosition(){
 
-  const marginX=Math.max(70*gameScale,W*.08);
-  const marginTop=Math.max(80*gameScale,H*.14);
-  const marginBottom=Math.max(90*gameScale,H*.16);
+  /* Parehong playable area ng target (kanang bahagi ng screen),
+     hindi na sa taas/paligid ng bow. */
+  const minX=W*.70;
+  const maxX=W*.92;
+  const minY=H*.20;
+  const maxY=H*.78;
+
+  /* iwas patong sa target */
+  const clearance=(getTargetRadius()+27*gameScale)*1.4;
 
   let x=0;
   let y=0;
 
-  for(let tries=0;tries<30;tries++){
+  for(let tries=0;tries<40;tries++){
 
-    x=marginX+Math.random()*Math.max(1,W-marginX*2);
-    y=marginTop+Math.random()*Math.max(1,H-marginTop-marginBottom);
+    x=minX+Math.random()*(maxX-minX);
+    y=minY+Math.random()*(maxY-minY);
 
-    if(Math.hypot(x-bow.x,y-bow.y)>150*gameScale)break;
+    if(Math.hypot(x-target.x,y-target.y)>clearance)break;
 
   }
 
@@ -608,9 +634,14 @@ function getRandomHealthPosition(){
 
 function spawnHealthHeart(){
 
+  hitsSinceHeart++;
+
   if(lives>=MAX_LIVES)return;
   if(healthHeart)return;
-  if(Math.random()>HEALTH_HEART_CHANCE)return;
+  if(hitsSinceHeart<HEALTH_HEART_COOLDOWN_HITS)return;
+  if(Math.random()>=HEALTH_HEART_CHANCE)return;
+
+  hitsSinceHeart=0;
 
   const pos=getRandomHealthPosition();
 
@@ -705,7 +736,7 @@ function drawHealthHeart(){
 
   let alpha=1;
 
-  if(h.life<=5){
+  if(h.life<=3){
     alpha=.45+Math.sin(h.pulse*2)*.45;
   }
 
